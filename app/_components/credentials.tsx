@@ -43,7 +43,21 @@ export function Credentials() {
           </p>
         </Reveal>
 
-        <div className="mx-auto mt-24 max-w-176 space-y-6 text-center text-[17px] leading-relaxed text-brand-muted lg:mt-32">
+        {/* Justified from `md` up so all three paragraphs sit in one block with
+            flush edges — balancing could only even out lines within a single
+            paragraph, never line the three of them up with each other. The
+            last line of each stays centred (`text-align-last`) so it reads as
+            deliberate rather than as a stranded fragment, and hyphenation
+            keeps the word spacing tight enough to avoid rivers. Below `md` the
+            measure is too narrow to justify without gaping, so it stays
+            centred.
+
+            34rem is chosen off a sweep of the measure: it is where no
+            paragraph is left ending on a one- or two-word line. Wider settings
+            strand "with it." and "honour that." on their own lines; much
+            narrower and the first paragraph starts hyphenating on every
+            line. */}
+        <div className="mx-auto mt-24 max-w-136 space-y-6 text-center text-[17px] leading-relaxed text-brand-muted md:hyphens-auto md:text-justify md:[text-align-last:center] lg:mt-32">
           {VALUES.map((copy, i) => (
             <Reveal key={copy} as="p" delay={i * 0.1}>
               {copy}

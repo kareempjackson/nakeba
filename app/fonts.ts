@@ -3,6 +3,19 @@ import localFont from "next/font/local";
 /**
  * Host Grotesk — the Nakeba Mason brand typeface.
  * Six weights, each with a matching italic. Self-hosted from `public/fonts`.
+ *
+ * `preload: false` is load-bearing. This family is declared in the root
+ * layout, so Next preloads it on every route — and with twelve faces declared
+ * that meant twelve `<link rel="preload">` tags, roughly 720KB of font, fetched
+ * at the highest priority ahead of the content, on a page that renders four of
+ * them. Turning preload off lets the browser discover each face from the
+ * stylesheet and fetch only the ones actually rendered.
+ *
+ * The usual cost of that trade is layout shift, and it doesn't apply here:
+ * `adjustFontFallback` defaults to `'Arial'` for local fonts, so Next emits a
+ * metrics-matched fallback face and the swap doesn't move anything. Text still
+ * paints immediately, in the adjusted fallback, which is what `display: swap`
+ * is for.
  */
 export const hostGrotesk = localFont({
   src: [
@@ -21,5 +34,6 @@ export const hostGrotesk = localFont({
   ],
   variable: "--font-host-grotesk",
   display: "swap",
+  preload: false,
   fallback: ["ui-sans-serif", "system-ui", "Helvetica Neue", "Arial", "sans-serif"],
 });

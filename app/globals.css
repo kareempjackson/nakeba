@@ -85,6 +85,13 @@
   html {
     -webkit-font-smoothing: antialiased;
     scroll-behavior: smooth;
+    /* The gutter is reserved whether or not the page is scrollable, so taking
+       and releasing a scroll lock never changes the layout width. Two places
+       depend on that: the entrance hands the page its scroll back mid-flight,
+       having already measured where the clones are flying to, and the mobile
+       menu locks the body while it's open. Without this, both reflow the page
+       sideways by the width of a classic scrollbar. */
+    scrollbar-gutter: stable;
   }
 
   body {

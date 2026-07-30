@@ -32,7 +32,10 @@ export function Offer() {
         <Reveal
           as="p"
           delay={0.15}
-          className="mx-auto mt-10 max-w-72 text-center text-[17px] leading-relaxed md:mt-8 md:max-w-112"
+          /* `text-balance` evens the line lengths out rather than filling each
+             line before breaking — without it a centred block this short rags
+             badly, with a full line above a two-word one. */
+          className="mx-auto mt-10 max-w-72 text-center text-[17px] leading-relaxed text-balance md:mt-8 md:max-w-112"
         >
           I work with creative founders on a monthly retainer — as their
           strategic operations partner inside the business. Not a VA you

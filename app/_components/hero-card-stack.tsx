@@ -13,8 +13,23 @@ import {
 } from "framer-motion";
 import { useCurtainLifted } from "./preloader/preloader-store";
 
-/** Placeholder for now — swap for the final art-directed crop. */
-const HERO_PHOTO = "/images/30532.jpg";
+/**
+ * Placeholders for now — swap for the final art-directed crops.
+ *
+ * The brand colour behind each photo is kept as the card's ground, so the deck
+ * still reads as the designed composition in the moment before the images
+ * decode, and around the rounded corners.
+ *
+ * The entrance sequence deals a copy of this same deck, so anything changed
+ * here must be changed in `preloader/stage-cards.tsx` too or the cards will
+ * visibly swap photos as they land.
+ */
+const PHOTO_BACK = "/images/30532.jpg";
+const PHOTO_MIDDLE = "/images/30530.jpg";
+const PHOTO_FRONT = "/images/30532.jpg";
+
+/** Matches the front card's, so all three resolve the same srcset candidate. */
+const SIZES = "(min-width: 1024px) 28vw, (min-width: 640px) 32vw, 38vw";
 
 /**
  * The three cards inside the signature deal themselves in on load: they land
@@ -87,9 +102,20 @@ export function HeroCardStack() {
           rotate: [0, -7, 11, 7],
         }}
         sway={{ rotate: 6, x: 3 }}
-        className="bg-brand-peach"
+        className="overflow-hidden bg-brand-peach"
         aria-hidden
-      />
+      >
+        <Image
+          src={PHOTO_BACK}
+          alt=""
+          fill
+          sizes={SIZES}
+          /* Above the fold, so it can't be lazy — but not `priority` either:
+             only the wordmark should be competing for the LCP window. */
+          loading="eager"
+          className="object-cover object-top"
+        />
+      </Card>
 
       {/* Middle card — butter. Fans the other way, which is what turns the
           pair into a riffle instead of a shared tilt. */}
@@ -104,9 +130,18 @@ export function HeroCardStack() {
           rotate: [0, 13, -1, 3.5],
         }}
         sway={{ rotate: -4.5, x: -2.5 }}
-        className="bg-brand-butter-soft"
+        className="overflow-hidden bg-brand-butter-soft"
         aria-hidden
-      />
+      >
+        <Image
+          src={PHOTO_MIDDLE}
+          alt=""
+          fill
+          sizes={SIZES}
+          loading="eager"
+          className="object-cover object-top"
+        />
+      </Card>
 
       {/* Front card — the photo. Stays nearly square so the face never tilts
           far; it only settles the deck. */}
@@ -124,10 +159,10 @@ export function HeroCardStack() {
         className="overflow-hidden bg-brand-surface shadow-[0_18px_45px_-20px_rgba(0,0,0,0.35)]"
       >
         <Image
-          src={HERO_PHOTO}
+          src={PHOTO_FRONT}
           alt="Nakeba Mason"
           fill
-          sizes="(min-width: 1024px) 28vw, (min-width: 640px) 32vw, 38vw"
+          sizes={SIZES}
           priority
           className="object-cover object-top"
         />

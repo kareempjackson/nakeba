@@ -11,10 +11,10 @@ import { setStage, usePreloaderStage } from "./preloader-store";
  * The entrance.
  *
  * Four beats: the monogram writes itself in; it settles and the name resolves
- * beneath it; three cards deal into the deck; then the whole composition flies
- * onto its real position on the page — the cards becoming the hero's deck, the
- * wordmark becoming the hero's signature, the monogram becoming the header
- * logo — while the white ground fades off beneath it.
+ * beneath it; three photo cards deal into the deck; then the whole composition
+ * flies onto its real position on the page — the cards becoming the hero's
+ * deck, the wordmark becoming the hero's signature, the monogram becoming the
+ * header logo — while the white ground fades off beneath it.
  *
  * Two things about the shape of this that are load-bearing:
  *
@@ -26,8 +26,11 @@ import { setStage, usePreloaderStage } from "./preloader-store";
  *
  * And the flight is one transform, not three. `SignatureComposition` is sized
  * entirely in percentages of its own width, so the staged copy and the real one
- * cannot disagree about their internals — measure the two boxes, scale one onto
- * the other, and all three pieces land together.
+ * cannot disagree about their internals — put the clone in the target's box,
+ * invert it back to where it stands, and all three pieces land together.
+ *
+ * That direction matters: the flight resolves *to* the identity transform, at
+ * the target's own width, rather than resting on a scale factor. See `place()`.
  */
 
 /* Arrivals — the ease used by `reveal.tsx`. */
@@ -54,12 +57,36 @@ const MONO_BIG = 2.1;
 
 const SESSION_KEY = "nm:intro";
 
+/**
+ * Moves a clone into the target's own layout box. Paired with `invert` below
+ * this is a true FLIP: the clone is laid out at the destination's size and then
+ * transformed back to where it already appears, so the flight *ends* on
+ * `scale(1)` at the target's exact width.
+ *
+ * That ending is the point. Scaling a clone onto its target instead leaves it
+ * resting as a texture the browser stretched — the wordmark is an SVG, so it
+ * flies blurred, re-rasterises sharp the instant the animation stops, and lands
+ * a fraction of a pixel off besides. Two identical images a hair apart is what
+ * a cross-fade renders as a shimmer. Landed this way the clone is laid out
+ * identically to the element beneath it, and the fade has nothing to reveal.
+ */
+function place(element: HTMLElement, box: DOMRect) {
+  element.style.position = "fixed";
+  element.style.left = `${box.left}px`;
+  element.style.top = `${box.top}px`;
+  element.style.width = `${box.width}px`;
+  element.style.maxWidth = "none";
+  element.style.margin = "0";
+  /* Cleared so the box read back is the layout box, not a transformed one. */
+  element.style.transform = "none";
+}
+
 /** Centre-to-centre, so it composes with a scale about the same origin. */
-function flip(source: DOMRect, destination: DOMRect) {
+function invert(from: DOMRect, to: DOMRect) {
   return {
-    x: destination.left + destination.width / 2 - (source.left + source.width / 2),
-    y: destination.top + destination.height / 2 - (source.top + source.height / 2),
-    scale: destination.width / source.width,
+    x: from.left + from.width / 2 - (to.left + to.width / 2),
+    y: from.top + from.height / 2 - (to.top + to.height / 2),
+    scale: from.width / to.width,
   };
 }
 
@@ -284,8 +311,20 @@ export function Preloader() {
       );
       if (finished) return;
 
-      /* 4 — the handoff. Measured now rather than up front: by this point the
-         font has swapped and the hero's column has settled, so the target is
+      /* The hero's signature sits under a column of text, so its position moves
+         when the webfont swaps in. Fonts aren't preloaded (see `app/fonts.ts`),
+         which makes that swap later and less predictable, so wait for it —
+         bounded, because a font that never arrives must not strand the page. */
+      await Promise.race([
+        document.fonts.ready.catch(() => {}),
+        new Promise((resolve) => {
+          const id = setTimeout(resolve, 250);
+          timers.add(id);
+        }),
+      ]);
+      if (finished) return;
+
+      /* 4 — the handoff. Measured now rather than up front, so the target is
          where it will actually be. Every read happens before any write. */
       const target = {
         signature: document
@@ -295,7 +334,7 @@ export function Preloader() {
           .querySelector('[data-flip-target="header-logo"]')
           ?.getBoundingClientRect(),
       };
-      const source = {
+      const from = {
         signature: signature!.getBoundingClientRect(),
         logo: mono!.getBoundingClientRect(),
       };
@@ -304,8 +343,25 @@ export function Preloader() {
         return;
       }
 
-      const toSignature = flip(source.signature, target.signature);
-      const toLogo = flip(source.logo, target.logo);
+      /* Place, then invert — both writes and the read between them happen in
+         this one task, so the browser never paints the clones sitting on their
+         targets untransformed. The inline transform is belt and braces: framer
+         writes the same values on the animation's first frame, which lands in
+         the same paint anyway. */
+      place(signature!, target.signature);
+      place(mono!, target.logo);
+
+      const landed = {
+        signature: signature!.getBoundingClientRect(),
+        logo: mono!.getBoundingClientRect(),
+      };
+      const liftSignature = invert(from.signature, landed.signature);
+      const liftLogo = invert(from.logo, landed.logo);
+
+      const asTransform = (lift: ReturnType<typeof invert>) =>
+        `translate3d(${lift.x}px, ${lift.y}px, 0) scale(${lift.scale})`;
+      signature!.style.transform = asTransform(liftSignature);
+      mono!.style.transform = asTransform(liftLogo);
 
       /* Hand the page back at 82% of the flight: its own deck picks up the
          shuffle while the clones are still settling, so the entrance dissolves
@@ -327,23 +383,21 @@ export function Preloader() {
             { opacity: [1, 0] },
             { duration: t(0.45), ease: EASE_ENTER, at: 0 },
           ],
+          /* Both fly to nothing: the clone is already in its target's box, so
+             the resting state is the identity transform. */
           [
             "[data-stage-signature]",
-            toSignature,
+            {
+              x: [liftSignature.x, 0],
+              y: [liftSignature.y, 0],
+              scale: [liftSignature.scale, 1],
+            },
             { duration: t(0.58), ease: EASE_FLIGHT, at: 0 },
-          ],
-          /* The two rear photos dissolve into the flat colour already beneath
-             them, so the deck lands as the hero's own — one photo, two colour
-             cards — without anything being swapped out. */
-          [
-            "[data-stage-photo='fade']",
-            { opacity: [1, 0] },
-            { duration: t(0.35), ease: "linear", at: 0 },
           ],
           /* A beat behind the wordmark, which reads as it being released. */
           [
             "[data-stage-mono]",
-            toLogo,
+            { x: [liftLogo.x, 0], y: [liftLogo.y, 0], scale: [liftLogo.scale, 1] },
             { duration: t(0.6), ease: EASE_FLIGHT, at: t(0.04) },
           ],
         ]),
@@ -408,10 +462,19 @@ export function Preloader() {
           </div>
         </div>
 
+        {/*
+          Kept comfortably narrower than the hero's copy at every breakpoint,
+          and not only so the flight has somewhere to go. The staged wordmark is
+          an <img>, so the moment it fades in it becomes an LCP candidate; if it
+          were ever the larger of the two it would displace the hero's wordmark
+          and move LCP from first paint out to the middle of the sequence. At
+          72vw against the hero's ~100vw it covers about two-thirds the area on
+          mobile and a third on desktop. Don't raise this without re-measuring.
+        */}
         <SignatureComposition
           data-stage-signature
           style={CENTRE_ORIGIN}
-          className="max-w-[min(86vw,48rem)]"
+          className="max-w-[min(72vw,40rem)]"
         >
           <StageCards />
         </SignatureComposition>
