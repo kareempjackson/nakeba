@@ -1,26 +1,146 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================================================
+   NAKEBA MASON — BRAND TOKENS
+   Tailwind v4 theme. Every value below is either taken directly from the
+   brand overview document or derived from it (derived values are labelled).
+   ========================================================================== */
+
+@theme {
+  /* --- Typeface -------------------------------------------------------- */
+  --font-sans: var(--font-host-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-host-grotesk), ui-sans-serif, system-ui, sans-serif;
+
+  /* --- Core palette (source: brand overview, p.11) ---------------------
+     Soft blues, blush pink, warm peach and buttery yellow, paired with a
+     clean off-white neutral and the bold black signature. */
+  --color-brand-sky: #8fddf3; /* soft blue      */
+  --color-brand-periwinkle: #afc6f8; /* soft blue      */
+  --color-brand-blush: #f7b4c4; /* blush pink     */
+  --color-brand-peach: #ffd4b3; /* warm peach     */
+  --color-brand-butter: #ffe9b5; /* buttery yellow */
+
+  /* --- Neutrals -------------------------------------------------------- */
+  --color-brand-canvas: #f9f8f6; /* off-white — the default page ground */
+  --color-brand-surface: #f6f6f6; /* section ground, one step off canvas */
+  --color-brand-ink: #000000; /* the bold black signature            */
+  --color-brand-white: #ffffff;
+
+  /* --- Derived: muted ink for secondary copy --------------------------
+     Ink blended toward canvas. 4.67:1 on canvas — passes WCAG AA. */
+  --color-brand-muted: #70706f;
+  /* Decorative hairlines only — not for text. */
+  --color-brand-line: #e3e2e0;
+
+  /* Ghosted display type — the second half of a large headline, set as
+     texture rather than as read-first content. 1.33:1 on Surface, so it is
+     DECORATIVE: never use it at body sizes, and never let it carry
+     information that appears nowhere else. Darken to #8E8E8E for 3:1. */
+  --color-brand-ghost: #d8d7d4;
+
+  /* --- Dark ground ----------------------------------------------------
+     Lifted just off pure black so the ink signature still reads as the
+     darkest thing in the system. */
+  --color-brand-night: #1a1a1a;
+  /* Secondary copy on Night. 7.23:1 — clears AA for body text, so unlike
+     Ghost this one may carry real content. */
+  --color-brand-night-muted: #a8a7a3;
+
+  /* --- Derived: soft tints (hue + white) ------------------------------
+     For large washes and section grounds where the core hue is too strong. */
+  --color-brand-sky-soft: #c7eef9;
+  --color-brand-periwinkle-soft: #d7e2fc;
+  --color-brand-blush-soft: #fbdae2;
+  --color-brand-peach-soft: #ffead9;
+  --color-brand-butter-soft: #fff4da;
+
+  /* --- Derived: deep variants (hue + black) ---------------------------
+     The pastels cannot carry small text. These darkened counterparts each
+     clear 4.5:1 on the off-white canvas, so tinted text and icons stay
+     legible without leaving the palette. */
+  --color-brand-sky-deep: #4d7783;
+  --color-brand-periwinkle-deep: #64718d;
+  --color-brand-blush-deep: #8f6872;
+  --color-brand-peach-deep: #856e5d;
+  --color-brand-butter-deep: #7a7057;
+
+  /* --- Editorial tracking scale ---------------------------------------
+     The brand sets display type tight and small caps wide. */
+  --tracking-display: -0.03em;
+  --tracking-eyebrow: 0.18em;
 }
 
+/* Keep the create-next-app `background`/`foreground` utilities working,
+   pointed at the brand neutrals. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--color-brand-canvas);
+  --color-foreground: var(--color-brand-ink);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-brand-canvas);
+    color: var(--color-brand-ink);
+    font-family: var(--font-sans);
+  }
+
+  /* Tabular figures keep swatch specs and numeric tables aligned. */
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-sky);
+    color: var(--color-brand-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-ink);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ==========================================================================
+   BRAND UTILITIES
+   ========================================================================== */
+
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+/* The signature gradient, as used in the monogram. */
+@utility brand-gradient {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-brand-sky) 0%,
+    var(--color-brand-periwinkle) 38%,
+    var(--color-brand-blush) 72%,
+    var(--color-brand-peach) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
