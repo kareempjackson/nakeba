@@ -26,7 +26,7 @@ export function Contact() {
               felt familiar.
             </p>
 
-            <CtaButton href="mailto:hello@nakebamason.co" className="mt-8">
+            <CtaButton href="mailto:hello@nakebamason.com" className="mt-8">
               Book a clarity call
             </CtaButton>
           </div>

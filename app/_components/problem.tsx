@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { CtaButton } from "./cta-button";
+import { ScrollRevealText } from "./scroll-reveal-text";
 
 /** Placeholder for now — swap for the final art-directed crop. */
 const CARD_PHOTO = "/images/30533.jpg";
@@ -34,10 +35,14 @@ export function Problem() {
           >
             The work is good. The clients keep coming. But behind the scenes,
             it&rsquo;s a different story.{" "}
-            <span className="font-light text-brand-ghost italic">
-              This is what running a growing creative business actually feels
-              like.
-            </span>
+            {/* The tail starts ghosted and fills to ink as the reader scrolls
+                through it — the second half of the thought arriving. */}
+            <ScrollRevealText
+              as="span"
+              variant="fill"
+              text="This is what running a growing creative business actually feels like."
+              className="font-light text-brand-ghost italic"
+            />
           </h2>
         </div>
 

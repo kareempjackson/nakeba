@@ -1,3 +1,5 @@
+import { ScrollRevealText } from "./scroll-reveal-text";
+
 const PILLARS = [
   {
     heading: "I get inside your business first.",
@@ -35,10 +37,15 @@ export function Approach() {
           >
             I don&rsquo;t come in to manage tasks. I come in to understand your
             business how{" "}
-            <span className="text-brand-night-muted">
-              it moves, where it stalls, and what it needs to run well without
-              you having to oversee every detail.
-            </span>
+            {/* The tail starts muted and fills to white as the reader scrolls
+                through it — the second half of the thought arriving. */}
+            <ScrollRevealText
+              as="span"
+              variant="fill"
+              tone="white"
+              text="it moves, where it stalls, and what it needs to run well without you having to oversee every detail."
+              className="text-brand-night-muted"
+            />
           </h2>
         </div>
 

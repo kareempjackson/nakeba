@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
@@ -13,11 +13,49 @@ const NAV_LINKS = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
   // The design marks the current section with a filled dot.
-  const current = "#home";
+  const [current, setCurrent] = useState(NAV_LINKS[0].href);
+
+  useEffect(() => {
+    /*
+      The reader is "in" the last nav section whose top has passed under the
+      sticky header. Sections that aren't in the nav (The Result, Plate, the
+      closing sections) therefore keep the preceding nav item marked, and short
+      sections still register — both of which an IntersectionObserver on
+      "mostly visible" would get wrong.
+    */
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const line = (headerRef.current?.offsetHeight ?? 0) + 1;
+      let active = NAV_LINKS[0].href;
+      for (const link of NAV_LINKS) {
+        const top = document
+          .querySelector(link.href)
+          ?.getBoundingClientRect().top;
+        if (top !== undefined && top <= line) active = link.href;
+      }
+      setCurrent(active);
+    };
+
+    const onScroll = () => {
+      frame ||= requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-brand-canvas/90 backdrop-blur-md">
+    <header ref={headerRef} className="sticky top-0 z-50 bg-brand-white">
       <div className="mx-auto flex w-full max-w-380 items-center justify-between gap-8 px-6 py-5 md:px-10 lg:px-14">
         <a href="#home" aria-label="Nakeba Mason — home" className="shrink-0">
           <Image
@@ -43,12 +81,14 @@ export function SiteHeader() {
                     aria-current={isCurrent ? "page" : undefined}
                     className="group flex items-center gap-2.5 text-[15px] transition-opacity hover:opacity-60"
                   >
-                    {isCurrent ? (
-                      <span
-                        aria-hidden
-                        className="size-2 shrink-0 rounded-full bg-brand-ink"
-                      />
-                    ) : null}
+                    {/* Always rendered, so the labels hold still as the
+                        marker moves between them. */}
+                    <span
+                      aria-hidden
+                      className={`size-2 shrink-0 rounded-full bg-brand-ink transition-opacity ${
+                        isCurrent ? "opacity-100" : "opacity-0"
+                      }`}
+                    />
                     {link.label}
                   </a>
                 </li>
@@ -104,12 +144,12 @@ export function SiteHeader() {
                 aria-current={link.href === current ? "page" : undefined}
                 className="flex items-center gap-2.5 border-b border-brand-line py-4 text-base last:border-0"
               >
-                {link.href === current ? (
-                  <span
-                    aria-hidden
-                    className="size-2 shrink-0 rounded-full bg-brand-ink"
-                  />
-                ) : null}
+                <span
+                  aria-hidden
+                  className={`size-2 shrink-0 rounded-full bg-brand-ink transition-opacity ${
+                    link.href === current ? "opacity-100" : "opacity-0"
+                  }`}
+                />
                 {link.label}
               </a>
             </li>

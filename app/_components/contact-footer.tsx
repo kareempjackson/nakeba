@@ -1,4 +1,4 @@
-const EMAIL = "hello@nakebamason.co";
+const EMAIL = "hello@nakebamason.com";
 
 /**
  * NOTE: these labels come from the comp but don't match the site's own IA, and
@@ -6,19 +6,13 @@ const EMAIL = "hello@nakebamason.co";
  * nearest real sections for now — worth reconciling.
  */
 const LINKS = [
-  { label: "Our Studio", href: "#about-me" },
   { label: "Our Work", href: "#by-the-numbers" },
   { label: "Services", href: "#what-i-take-off-your-plate" },
   { label: "Contact", href: "#contact" },
 ];
 
 /** Add profile URLs and these render as links instead of plain labels. */
-const SOCIALS = [
-  { label: "IG", href: "" },
-  { label: "TW", href: "" },
-  { label: "FB", href: "" },
-  { label: "YT", href: "" },
-];
+const SOCIALS = [{ label: "LI", href: "" }];
 
 const BRACE = "text-[13px] tracking-[0.12em] uppercase";
 
@@ -57,39 +51,56 @@ export function ContactFooter() {
           href={`mailto:${EMAIL}`}
           className="block text-[clamp(2.25rem,9vw,10rem)] leading-[0.85] font-bold tracking-[-0.055em] break-all uppercase transition-opacity hover:opacity-70"
         >
-          Hello@
-          <wbr />
-          nakebamason.co
+          <span className="block">Hello@</span>
+          <span className="block">nakebamason.com</span>
         </a>
 
-        {/* Bottom row */}
-        <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-6">
-          <p className={BRACE}>
-            Design by <span className="normal-case">Ghostsavvy</span>
-          </p>
+        {/* Bottom block — copyright + socials, then the studio credit under
+            the rule. Kept as one child so the column above still distributes
+            as three rows. The year is stamped at build time, so it advances
+            with the next deploy rather than sitting frozen in the markup. */}
+        <div>
+          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-6">
+            <p className={BRACE}>
+              &copy; {new Date().getFullYear()} Nakeba Mason. All rights
+              reserved.
+            </p>
 
-          <ul className="flex flex-wrap items-center gap-x-8 gap-y-3 lg:gap-x-12">
-            {SOCIALS.map((social) => (
-              <li key={social.label} className={BRACE}>
-                <span aria-hidden className="mr-2.5 inline-block">
-                  &#123;
-                </span>
-                {social.href ? (
-                  <a
-                    href={social.href}
-                    className="transition-opacity hover:opacity-60"
-                  >
-                    {social.label}
-                  </a>
-                ) : (
-                  social.label
-                )}
-                <span aria-hidden className="ml-2.5 inline-block">
-                  &#125;
-                </span>
-              </li>
-            ))}
-          </ul>
+            <ul className="flex flex-wrap items-center gap-x-8 gap-y-3 lg:gap-x-12">
+              {SOCIALS.map((social) => (
+                <li key={social.label} className={BRACE}>
+                  <span aria-hidden className="mr-2.5 inline-block">
+                    &#123;
+                  </span>
+                  {social.href ? (
+                    <a
+                      href={social.href}
+                      className="transition-opacity hover:opacity-60"
+                    >
+                      {social.label}
+                    </a>
+                  ) : (
+                    social.label
+                  )}
+                  <span aria-hidden className="ml-2.5 inline-block">
+                    &#125;
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <p className="mt-6 text-[11px] tracking-[0.12em] text-brand-white/60 uppercase">
+            Design by{" "}
+            <a
+              href="https://ghostsavvy.com"
+              target="_blank"
+              rel="noreferrer"
+              className="normal-case transition-colors hover:text-brand-white"
+            >
+              Ghost Savvy Studios
+            </a>
+          </p>
         </div>
       </div>
     </footer>

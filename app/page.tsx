@@ -2,6 +2,7 @@ import { Approach } from "./_components/approach";
 import { Contact } from "./_components/contact";
 import { ContactFooter } from "./_components/contact-footer";
 import { Credentials } from "./_components/credentials";
+import { EdgeReveal } from "./_components/edge-reveal";
 import { Hero } from "./_components/hero";
 import { Meet } from "./_components/meet";
 import { NextStep } from "./_components/next-step";
@@ -35,9 +36,18 @@ export default function Home() {
           <Plate />
           <Meet />
           <Credentials />
-          <Stats />
-          <Contact />
-          <NextStep />
+
+          {/*
+            From "By the numbers" down, the page pulls back from the edges as
+            it scrolls, revealing brand colour along both margins. The strips
+            end with this block — the summary section below runs full-bleed
+            again.
+          */}
+          <EdgeReveal>
+            <Stats />
+            <Contact />
+            <NextStep />
+          </EdgeReveal>
         </main>
 
         <SiteFooter />

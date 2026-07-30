@@ -25,7 +25,7 @@ export function Stats() {
     <section
       id="by-the-numbers"
       aria-labelledby="by-the-numbers-title"
-      className="scroll-mt-20 bg-brand-surface"
+      className="scroll-mt-20 bg-brand-white"
     >
       <div className="mx-auto w-full max-w-380 px-6 py-24 md:px-10 md:py-32 lg:px-14 lg:py-40">
         <div className="relative">

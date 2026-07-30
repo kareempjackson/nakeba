@@ -1,11 +1,10 @@
 import Image from "next/image";
 import { CtaButton } from "./cta-button";
+import { HeroCardStack } from "./hero-card-stack";
+import { ScrollRevealText } from "./scroll-reveal-text";
 
 const WORDMARK_NAKEBA = "/logo/main%20logo/Nakeba%20Logo%20part.svg";
 const WORDMARK_MASON = "/logo/main%20logo/mason%20logo%20part.svg";
-
-/** Placeholder for now — swap for the final art-directed crop. */
-const HERO_PHOTO = "/images/30532.jpg";
 
 const CAPABILITIES = [
   "Strategic Initiatives",
@@ -15,34 +14,52 @@ const CAPABILITIES = [
   "Analyse Performance",
 ];
 
+const POSITIONING =
+  "I work with creative founders who are growing but feeling the weight of everything that comes with it. Client requests slipping through the cracks, a team that needs direction, and a business that needs someone holding it all together behind the scenes.";
+
 export function Hero() {
   return (
     <section id="home" className="relative overflow-hidden">
-      <div className="mx-auto w-full max-w-380 px-6 pt-10 pb-20 md:px-10 md:pt-14 lg:px-14 lg:pb-28">
+      {/*
+        The fold: capabilities, pitch and the full signature composition are
+        sized to land inside one viewport (minus the sticky header, 4.75rem on
+        mobile / 5.25rem once the logo steps up), so nothing about the card
+        design needs scrolling to be read. `svh` keeps mobile browser chrome
+        from eating the composition.
+      */}
+      <div className="mx-auto flex min-h-[calc(100svh-4.75rem)] w-full max-w-380 flex-col px-6 pt-8 pb-10 md:min-h-[calc(100svh-5.25rem)] md:px-10 md:pt-10 lg:px-14 lg:pt-12 lg:pb-14">
         {/* Capabilities + pitch */}
-        <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-          <ul className="space-y-1.5 text-[17px] leading-relaxed">
+        <div className="flex shrink-0 flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
+          <ul className="space-y-1.5 text-[15px] leading-relaxed">
             {CAPABILITIES.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
 
           <div className="max-w-md lg:shrink-0">
-            <p className="text-xl leading-snug font-medium md:text-2xl md:leading-snug">
+            <p className="text-lg leading-snug font-medium md:text-xl md:leading-snug">
               You&rsquo;re too good at what you do to be buried in the chaos
               behind it.
             </p>
 
-            <CtaButton href="#contact" className="mt-7">
+            <CtaButton href="#contact" className="mt-6">
               Let&rsquo;s talk
             </CtaButton>
           </div>
         </div>
 
         {/* Signature composition — the photo stack is sandwiched between the
-            two halves of the signature: "Nakeba" behind, "Mason" in front. */}
-        <div className="mt-16 md:mt-24 lg:mt-28">
-          <div className="relative mx-auto w-full max-w-6xl pb-[10%]">
+            two halves of the signature: "Nakeba" behind, "Mason" in front.
+            It centres in whatever height the fold has left over. */}
+        <div className="mt-10 flex min-h-0 flex-1 items-center justify-center lg:mt-6">
+          {/*
+            The composition is width-driven (the wordmarks set the height at
+            roughly half the width), so on wide-but-short screens we cap its
+            width by the height still available. `(100svh - 24rem) * 2` is that
+            budget: 24rem covers the header, this block's padding and the
+            capabilities row above.
+          */}
+          <div className="relative w-full max-w-6xl pb-[23%] sm:pb-[13%] lg:max-w-[clamp(28rem,calc((100svh-24rem)*2),72rem)] lg:pb-[10%]">
             {/* Behind */}
             <Image
               src={WORDMARK_NAKEBA}
@@ -54,28 +71,11 @@ export function Hero() {
               className="relative z-0 h-auto w-full"
             />
 
-            {/* Middle — the card stack */}
-            <div className="absolute top-[15%] left-[47.5%] z-10 w-[38%] -translate-x-1/2 sm:w-[32%] lg:w-[27%]">
-              <div className="relative aspect-5/7">
-                <div
-                  aria-hidden
-                  className="absolute inset-0 translate-x-[4%] translate-y-[1%] rotate-[7deg] rounded-[3px] bg-brand-peach"
-                />
-                <div
-                  aria-hidden
-                  className="absolute inset-0 translate-x-[6%] translate-y-[-2%] rotate-[3.5deg] rounded-[3px] bg-brand-butter-soft"
-                />
-                <div className="absolute inset-0 overflow-hidden rounded-[3px] bg-brand-surface shadow-[0_18px_45px_-20px_rgba(0,0,0,0.35)]">
-                  <Image
-                    src={HERO_PHOTO}
-                    alt="Nakeba Mason"
-                    fill
-                    sizes="(min-width: 1024px) 28vw, (min-width: 640px) 32vw, 38vw"
-                    priority
-                    className="object-cover object-top"
-                  />
-                </div>
-              </div>
+            {/* Middle — the card stack. `top` is a share of the container's
+                height, so it is re-tuned per breakpoint alongside the bottom
+                padding to keep the card sitting at the same spot. */}
+            <div className="absolute top-[12%] left-[47.5%] z-10 w-[38%] -translate-x-1/2 sm:top-[14%] sm:w-[32%] lg:top-[15%] lg:w-[27%]">
+              <HeroCardStack />
             </div>
 
             {/* In front */}
@@ -90,14 +90,15 @@ export function Hero() {
             />
           </div>
         </div>
+      </div>
 
-        {/* Positioning statement */}
-        <p className="mt-4 max-w-136 text-[17px] leading-loose text-brand-muted lg:mt-0 lg:ml-[28%]">
-          I work with creative founders who are growing but feeling the weight of
-          everything that comes with it. Client requests slipping through the
-          cracks, a team that needs direction, and a business that needs someone
-          holding it all together behind the scenes.
-        </p>
+      {/* Below the fold: the positioning statement, revealed word by word as
+          the reader scrolls into it. */}
+      <div className="mx-auto w-full max-w-380 px-6 pb-24 md:px-10 md:pb-32 lg:px-14 lg:pb-40">
+        <ScrollRevealText
+          text={POSITIONING}
+          className="max-w-136 text-[17px] leading-loose text-brand-muted lg:ml-[28%]"
+        />
       </div>
     </section>
   );
