@@ -1,3 +1,6 @@
+import { CountUp } from "./count-up";
+import { Reveal } from "./reveal";
+
 /**
  * NOTE — two copy issues carried over from the comp, left as-is rather than
  * guessed at:
@@ -37,18 +40,19 @@ export function Stats() {
           </h2>
 
           <dl className="lg:ml-[8.5%]">
-            {STATS.map((stat) => (
-              <div
+            {STATS.map((stat, i) => (
+              <Reveal
                 key={stat.value}
+                delay={i * 0.08}
                 className="grid items-start gap-x-10 gap-y-3 border-b border-brand-line py-6 lg:grid-cols-12"
               >
                 <dt className="text-[clamp(3rem,6.5vw,7.5rem)] leading-none font-normal tracking-display lg:col-span-6">
-                  {stat.value}
+                  <CountUp value={stat.value} />
                 </dt>
                 <dd className="text-[17px] leading-relaxed text-brand-muted lg:col-span-2 lg:col-start-11 lg:pt-2">
                   {stat.copy}
                 </dd>
-              </div>
+              </Reveal>
             ))}
           </dl>
         </div>

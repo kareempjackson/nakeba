@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   title: "Brand Guide",
   description:
     "Logo, colour, typography and photography standards for the Nakeba Mason identity.",
+  // An internal reference, not a marketing page — kept out of search results.
+  robots: { index: false, follow: false },
+  alternates: { canonical: "/brand" },
 };
 
 const LOCKUP = "/logo/main%20logo/Nakeba%20Logo.svg";

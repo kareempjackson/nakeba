@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import { CtaButton } from "./cta-button";
+import { Parallax } from "./parallax";
+import { Reveal } from "./reveal";
 
 /** Placeholder for now — swap for the final art-directed crop. */
 const PORTRAIT = "/images/30532.jpg";
@@ -55,15 +57,17 @@ export function Plate() {
 
         <div className="mt-12 grid gap-x-10 gap-y-16 lg:mt-16 lg:grid-cols-12">
           {/* Left rail */}
-          <div className="lg:col-span-3">
+          <Reveal className="lg:col-span-3">
             <div className="relative aspect-8/7 overflow-hidden rounded-md bg-brand-night">
-              <Image
-                src={PORTRAIT}
-                alt="Nakeba Mason"
-                fill
-                sizes="(min-width: 1024px) 25vw, 100vw"
-                className="object-cover"
-              />
+              <Parallax distance={22} className="absolute -inset-8">
+                <Image
+                  src={PORTRAIT}
+                  alt="Nakeba Mason"
+                  fill
+                  sizes="(min-width: 1024px) 25vw, 100vw"
+                  className="object-cover"
+                />
+              </Parallax>
             </div>
 
             <p className="mt-6 text-[15px] leading-relaxed">
@@ -76,15 +80,18 @@ export function Plate() {
             <CtaButton href="#contact" variant="light" className="mt-8">
               Start a project
             </CtaButton>
-          </div>
+          </Reveal>
 
-          {/* Disclosure list */}
+          {/* Disclosure list — the rows draw in one by one, so the list reads
+              as a tally of what's being handed over. */}
           <dl className="lg:col-span-6 lg:col-start-7">
             {ITEMS.map((item, i) => {
               const isOpen = open === i;
               return (
-                <div
+                <Reveal
                   key={item.title}
+                  delay={i * 0.06}
+                  distance={16}
                   className="border-t border-brand-white/15 last:border-b"
                 >
                   <dt>
@@ -119,7 +126,7 @@ export function Plate() {
                   >
                     {item.body}
                   </dd>
-                </div>
+                </Reveal>
               );
             })}
           </dl>

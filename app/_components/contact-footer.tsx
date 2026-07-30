@@ -12,7 +12,13 @@ const LINKS = [
 ];
 
 /** Add profile URLs and these render as links instead of plain labels. */
-const SOCIALS = [{ label: "LI", href: "" }];
+const SOCIALS = [
+  {
+    label: "LI",
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/in/nakeba-mason/",
+  },
+];
 
 const BRACE = "text-[13px] tracking-[0.12em] uppercase";
 
@@ -22,7 +28,13 @@ export function ContactFooter() {
       <div className="flex min-h-112 flex-col justify-between gap-12 overflow-hidden px-6 py-8 md:min-h-136 md:px-8">
         {/* Top row */}
         <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-6">
-          <p className="text-[15px] font-bold">Send a message</p>
+          {/* Opens the reader's mail client, same as the address below it. */}
+          <a
+            href={`mailto:${EMAIL}`}
+            className="text-[15px] font-bold transition-opacity hover:opacity-60"
+          >
+            Send a message
+          </a>
 
           <nav aria-label="Footer">
             <ul className="flex flex-wrap items-center gap-x-8 gap-y-3 lg:gap-x-14">
@@ -75,6 +87,11 @@ export function ContactFooter() {
                   {social.href ? (
                     <a
                       href={social.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      // The two-letter label is the design; the full name is
+                      // what a screen reader announces.
+                      aria-label={social.name}
                       className="transition-opacity hover:opacity-60"
                     >
                       {social.label}

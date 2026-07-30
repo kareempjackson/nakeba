@@ -1,9 +1,16 @@
+import { Parallax } from "./parallax";
+
 /**
- * The brand name set enormous and split across the viewport — the first
- * fragment clipped by the left edge, the second by the right, with the
- * section's content sitting in the gap between them.
+ * The brand name set enormous and split across the section — the fragments
+ * clipped by the viewport edges, with the section's content sitting between
+ * them. They pull apart as the section is scrolled, so the name opens around
+ * the copy rather than sitting still behind it.
  *
- * "Nak" + "eba" and "Ma" + "son" are the two halves of Nakeba Mason.
+ * There's no room for two fragments side by side on a phone, so below `md`
+ * they stack instead: one above the content, one below, both left-aligned and
+ * running off the right edge. `text-brand-ghost` is the token's own use case —
+ * display type set as texture, never as read-first content.
+ *
  * Purely decorative: the readable name lives in the logo and headings.
  */
 export function BleedWord({
@@ -15,19 +22,34 @@ export function BleedWord({
   right: string;
   align?: "center" | "top";
 }) {
+  /*
+    Below `md` a fragment is `min(70vw,17rem)` tall (leading-none, so the line
+    box is the font size). The sections that use this reserve
+    `min(90vw,22rem)` of vertical padding — the fragment plus a 5rem gap — so
+    the copy in the middle always has air around it. Change one, change both.
+  */
   const type =
-    "text-[clamp(6rem,21vw,25rem)] leading-none font-bold tracking-display";
+    "block text-[min(70vw,17rem)] leading-none font-bold tracking-display text-brand-ghost md:text-[clamp(6rem,21vw,25rem)]";
 
   return (
     <div
       aria-hidden
       className={[
-        "pointer-events-none absolute inset-0 flex justify-between overflow-hidden select-none",
-        align === "center" ? "items-center" : "items-start",
+        "pointer-events-none absolute inset-0 flex flex-col items-start justify-between overflow-hidden select-none md:flex-row",
+        // `align` only has meaning once the fragments sit side by side.
+        align === "center" ? "md:items-center" : "md:items-start",
       ].join(" ")}
     >
-      <span className={`translate-x-[-20%] ${type}`}>{left}</span>
-      <span className={`translate-x-[18%] ${type}`}>{right}</span>
+      {/* Opposite signs: the halves travel away from each other, not together.
+          The static offsets stay on the inner span so the drift composes with
+          the design's resting position instead of replacing it — and they only
+          apply from `md`, where the fragments bleed off opposite edges. */}
+      <Parallax axis="x" distance={-70}>
+        <span className={`${type} md:translate-x-[-20%]`}>{left}</span>
+      </Parallax>
+      <Parallax axis="x" distance={70}>
+        <span className={`${type} md:translate-x-[18%]`}>{right}</span>
+      </Parallax>
     </div>
   );
 }

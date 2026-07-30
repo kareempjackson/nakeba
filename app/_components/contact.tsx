@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { CtaButton } from "./cta-button";
+import { Parallax } from "./parallax";
+import { Reveal } from "./reveal";
 
 /** Placeholder for now — swap for the final art-directed crop. */
 const PORTRAIT = "/images/30529.jpg";
@@ -20,7 +22,7 @@ export function Contact() {
             Let&rsquo;s talk about your business.
           </h2>
 
-          <div className="lg:col-span-3 lg:col-start-10 lg:mt-36">
+          <Reveal delay={0.15} className="lg:col-span-3 lg:col-start-10 lg:mt-36">
             <p className="text-[17px] leading-relaxed text-brand-muted">
               If you&rsquo;ve read this far, something on this page probably
               felt familiar.
@@ -29,18 +31,22 @@ export function Contact() {
             <CtaButton href="mailto:hello@nakebamason.com" className="mt-8">
               Book a clarity call
             </CtaButton>
-          </div>
+          </Reveal>
         </div>
 
-        {/* Full-width closing portrait, treated black and white. */}
+        {/* Full-width closing portrait, treated black and white. The drift is
+            the largest on the page — the last image, and the one the reader
+            arrives at slowest. */}
         <div className="relative mt-16 aspect-4/3 overflow-hidden bg-brand-surface lg:mt-24">
-          <Image
-            src={PORTRAIT}
-            alt="Nakeba Mason"
-            fill
-            sizes="100vw"
-            className="object-cover grayscale"
-          />
+          <Parallax distance={44} className="absolute -inset-12">
+            <Image
+              src={PORTRAIT}
+              alt="Portrait of Nakeba Mason, operations partner to creative founders"
+              fill
+              sizes="100vw"
+              className="object-cover grayscale"
+            />
+          </Parallax>
         </div>
       </div>
     </section>

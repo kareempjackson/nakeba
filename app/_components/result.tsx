@@ -1,3 +1,6 @@
+import { Reveal } from "./reveal";
+import { ScrollRevealText } from "./scroll-reveal-text";
+
 export function Result() {
   return (
     <section
@@ -12,22 +15,33 @@ export function Result() {
             [ The result ]
           </p>
 
+          {/* The payoff. Unlike the setup headlines, the whole line fills —
+              nothing here is an aside. */}
           <h2
             id="the-result-title"
             className="text-[clamp(1.875rem,3.6vw,4.75rem)] leading-[1.15] font-normal tracking-display [word-spacing:-0.03em] lg:max-w-280 lg:indent-[15%]"
           >
-            You spend less time managing the business and more time building it.
+            <ScrollRevealText
+              as="span"
+              variant="fill"
+              tone="white"
+              text="You spend less time managing the business and more time building it."
+            />
           </h2>
         </div>
 
         {/* NOTE: this copy is duplicated verbatim from the Approach headline in
             the source comp — almost certainly placeholder. Replace when the
             real supporting line lands. */}
-        <p className="mt-10 max-w-132 text-[15px] leading-relaxed text-brand-night-muted lg:mt-12 lg:ml-[23%]">
+        <Reveal
+          as="p"
+          delay={0.15}
+          className="mt-10 max-w-132 text-[15px] leading-relaxed text-brand-night-muted lg:mt-12 lg:ml-[23%]"
+        >
           I don&rsquo;t come in to manage tasks. I come in to understand your
           business how it moves, where it stalls, and what it needs to run well
           without you having to oversee every detail.
-        </p>
+        </Reveal>
       </div>
     </section>
   );

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Approach } from "./_components/approach";
 import { Contact } from "./_components/contact";
 import { ContactFooter } from "./_components/contact-footer";
@@ -12,11 +13,77 @@ import { Problem } from "./_components/problem";
 import { Result } from "./_components/result";
 import { SiteFooter } from "./_components/site-footer";
 import { SiteHeader } from "./_components/site-header";
+import { CAPABILITIES } from "./_components/site-data";
 import { Stats } from "./_components/stats";
+import {
+  SITE_DESCRIPTION,
+  SITE_EMAIL,
+  SITE_NAME,
+  SITE_OFFER,
+  SITE_ROLE,
+  SITE_URL,
+} from "./site";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
+/**
+ * Structured data for the one page: who she is, what the retainer is, and the
+ * site itself. Only facts the page itself states — no address, hours or
+ * pricing, none of which are published here.
+ */
+const STRUCTURED_DATA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      description: SITE_DESCRIPTION,
+      inLanguage: "en",
+      publisher: { "@id": `${SITE_URL}/#person` },
+    },
+    {
+      "@type": "Person",
+      "@id": `${SITE_URL}/#person`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      email: `mailto:${SITE_EMAIL}`,
+      image: `${SITE_URL}/opengraph-image`,
+      jobTitle: SITE_ROLE,
+      description: SITE_DESCRIPTION,
+      knowsAbout: CAPABILITIES,
+    },
+    {
+      "@type": "Service",
+      "@id": `${SITE_URL}/#service`,
+      name: SITE_OFFER,
+      serviceType: "Business operations management",
+      description:
+        "A monthly retainer partnership: a strategic operations partner inside the business who takes ownership of the operational side — coordinating projects, keeping clients and teams aligned, and building the structure the business runs on.",
+      provider: { "@id": `${SITE_URL}/#person` },
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "What I take off your plate",
+        itemListElement: CAPABILITIES.map((capability) => ({
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: capability },
+        })),
+      },
+    },
+  ],
+};
 
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
+      />
+
       {/*
         Footer reveal: this stack is opaque and sits above the footer, which is
         pinned to the bottom of the viewport behind it. Scrolling slides the

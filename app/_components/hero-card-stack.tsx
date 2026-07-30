@@ -11,6 +11,7 @@ import {
   type MotionValue,
   type Transition,
 } from "framer-motion";
+import { useCurtainLifted } from "./preloader/preloader-store";
 
 /** Placeholder for now — swap for the final art-directed crop. */
 const HERO_PHOTO = "/images/30532.jpg";
@@ -30,6 +31,13 @@ const HERO_PHOTO = "/images/30532.jpg";
  *
  * The last keyframe of every load track is the card's resting position, so the
  * end state is exactly the static composition.
+ *
+ * The shuffle waits for the entrance sequence: while the curtain is up the
+ * cards hold on their first keyframe — the squared deck — which is exactly
+ * where the sequence deals its own cards. So the entrance deals and the page
+ * shuffles, and the seam between them is one continuous gesture. With no
+ * intro, the gate is already open on the first frame and this behaves as it
+ * always did.
  */
 
 /** Shared four-beat timing: squared → riffle out → cross back → settle. */
@@ -50,6 +58,7 @@ type Keyframes = { x: string[]; y: string[]; rotate: number[] };
 
 export function HeroCardStack() {
   const reduceMotion = useReducedMotion();
+  const play = useCurtainLifted();
 
   // Scroll velocity, spring-smoothed: it swells while the page moves and
   // decays back to zero when it stops, so the cards settle on their own.
@@ -69,6 +78,7 @@ export function HeroCardStack() {
       {/* Back card — peach. Swings widest, both on load and on scroll. */}
       <Card
         riffle={riffle}
+        play={play}
         reduceMotion={reduceMotion ?? false}
         delay={0.42}
         keyframes={{
@@ -85,6 +95,7 @@ export function HeroCardStack() {
           pair into a riffle instead of a shared tilt. */}
       <Card
         riffle={riffle}
+        play={play}
         reduceMotion={reduceMotion ?? false}
         delay={0.34}
         keyframes={{
@@ -101,6 +112,7 @@ export function HeroCardStack() {
           far; it only settles the deck. */}
       <Card
         riffle={riffle}
+        play={play}
         reduceMotion={reduceMotion ?? false}
         delay={0.26}
         keyframes={{
@@ -126,6 +138,7 @@ export function HeroCardStack() {
 
 function Card({
   riffle,
+  play,
   reduceMotion,
   keyframes,
   delay,
@@ -135,6 +148,8 @@ function Card({
   ...rest
 }: {
   riffle: MotionValue<number>;
+  /** False while the entrance sequence still owns the screen. */
+  play: boolean;
   reduceMotion: boolean;
   keyframes: Keyframes;
   delay: number;
@@ -162,20 +177,20 @@ function Card({
     rotate: keyframes.rotate.at(-1),
   };
 
+  /* The squared deck the shuffle starts from — and the pose the cards hold in
+     while the entrance sequence is still running. */
+  const squared = {
+    x: keyframes.x[0],
+    y: keyframes.y[0],
+    rotate: keyframes.rotate[0],
+  };
+
   return (
     // Outer layer: the one-off load shuffle.
     <motion.div
       className="absolute inset-0"
-      initial={
-        reduceMotion
-          ? false
-          : {
-              x: keyframes.x[0],
-              y: keyframes.y[0],
-              rotate: keyframes.rotate[0],
-            }
-      }
-      animate={reduceMotion ? restState : keyframes}
+      initial={reduceMotion ? false : squared}
+      animate={reduceMotion ? restState : play ? keyframes : squared}
       transition={reduceMotion ? { duration: 0 } : { ...SHUFFLE, delay }}
     >
       {/* Inner layer: the continuous scroll riffle. */}

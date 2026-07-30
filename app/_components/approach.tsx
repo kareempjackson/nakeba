@@ -1,3 +1,4 @@
+import { Reveal } from "./reveal";
 import { ScrollRevealText } from "./scroll-reveal-text";
 
 const PILLARS = [
@@ -52,8 +53,11 @@ export function Approach() {
         {/* Pillars */}
         <ol className="mt-24 space-y-14 lg:mt-40 lg:space-y-20">
           {PILLARS.map((pillar, i) => (
-            <li
+            /* Marker, then heading, then body: the method assembles itself in
+               reading order as each pillar comes up. */
+            <Reveal
               key={pillar.heading}
+              as="li"
               className="grid gap-x-10 gap-y-4 md:grid-cols-2 lg:grid-cols-12"
             >
               <span
@@ -61,19 +65,23 @@ export function Approach() {
                 className="mt-1.5 hidden size-2.5 bg-brand-white lg:col-start-4 lg:block"
               />
 
-              <div className="lg:col-span-3 lg:col-start-6">
+              <Reveal delay={0.12} className="lg:col-span-3 lg:col-start-6">
                 <p className="text-[15px] text-brand-night-muted">
                   Pillar {i + 1}
                 </p>
                 <h3 className="mt-3 text-base font-bold tracking-[0.02em]">
                   {pillar.heading}
                 </h3>
-              </div>
+              </Reveal>
 
-              <p className="text-[15px] leading-relaxed text-brand-night-muted lg:col-span-3 lg:col-start-10">
+              <Reveal
+                as="p"
+                delay={0.24}
+                className="text-[15px] leading-relaxed text-brand-night-muted lg:col-span-3 lg:col-start-10"
+              >
                 {pillar.body}
-              </p>
-            </li>
+              </Reveal>
+            </Reveal>
           ))}
         </ol>
       </div>

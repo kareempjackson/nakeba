@@ -1,10 +1,9 @@
-import Image from "next/image";
 import { CtaButton } from "./cta-button";
 import { HeroCardStack } from "./hero-card-stack";
+import { Parallax } from "./parallax";
 import { ScrollRevealText } from "./scroll-reveal-text";
-
-const WORDMARK_NAKEBA = "/logo/main%20logo/Nakeba%20Logo%20part.svg";
-const WORDMARK_MASON = "/logo/main%20logo/mason%20logo%20part.svg";
+import { SignatureComposition } from "./signature-composition";
+import { SITE_NAME, SITE_ROLE } from "../site";
 
 const CAPABILITIES = [
   "Strategic Initiatives",
@@ -28,6 +27,13 @@ export function Hero() {
         from eating the composition.
       */}
       <div className="mx-auto flex min-h-[calc(100svh-4.75rem)] w-full max-w-380 flex-col px-6 pt-8 pb-10 md:min-h-[calc(100svh-5.25rem)] md:px-10 md:pt-10 lg:px-14 lg:pt-12 lg:pb-14">
+        {/* The page's h1. The signature composition below is the visual title,
+            but it's set as artwork, so the readable heading is carried here for
+            search engines and screen readers. */}
+        <h1 className="sr-only">
+          {SITE_NAME} — {SITE_ROLE}
+        </h1>
+
         {/* Capabilities + pitch */}
         <div className="flex shrink-0 flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
           <ul className="space-y-1.5 text-[15px] leading-relaxed">
@@ -52,43 +58,29 @@ export function Hero() {
             two halves of the signature: "Nakeba" behind, "Mason" in front.
             It centres in whatever height the fold has left over. */}
         <div className="mt-10 flex min-h-0 flex-1 items-center justify-center lg:mt-6">
-          {/*
-            The composition is width-driven (the wordmarks set the height at
-            roughly half the width), so on wide-but-short screens we cap its
-            width by the height still available. `(100svh - 24rem) * 2` is that
-            budget: 24rem covers the header, this block's padding and the
-            capabilities row above.
-          */}
-          <div className="relative w-full max-w-6xl pb-[23%] sm:pb-[13%] lg:max-w-[clamp(28rem,calc((100svh-24rem)*2),72rem)] lg:pb-[10%]">
-            {/* Behind */}
-            <Image
-              src={WORDMARK_NAKEBA}
-              alt=""
-              width={523}
-              height={126}
-              unoptimized
-              priority
-              className="relative z-0 h-auto w-full"
-            />
+          {/* The signature holds its ground as the page starts to move over it
+              — the first hint that scrolling is going somewhere. */}
+          <Parallax
+            distance={32}
+            className="flex w-full items-center justify-center"
+          >
+            {/*
+              The composition is width-driven (the wordmarks set the height at
+              roughly half the width), so on wide-but-short screens we cap its
+              width by the height still available. `(100svh - 24rem) * 2` is
+              that budget: 24rem covers the header, this block's padding and the
+              capabilities row above.
 
-            {/* Middle — the card stack. `top` is a share of the container's
-                height, so it is re-tuned per breakpoint alongside the bottom
-                padding to keep the card sitting at the same spot. */}
-            <div className="absolute top-[12%] left-[47.5%] z-10 w-[38%] -translate-x-1/2 sm:top-[14%] sm:w-[32%] lg:top-[15%] lg:w-[27%]">
+              `data-flip-target` is where the entrance sequence lands its copy
+              of the signature — see `preloader/preloader.tsx`.
+            */}
+            <SignatureComposition
+              data-flip-target="hero-signature"
+              className="max-w-6xl lg:max-w-[clamp(28rem,calc((100svh-24rem)*2),72rem)]"
+            >
               <HeroCardStack />
-            </div>
-
-            {/* In front */}
-            <Image
-              src={WORDMARK_MASON}
-              alt="Nakeba Mason"
-              width={522}
-              height={90}
-              unoptimized
-              priority
-              className="relative z-20 mt-[-1.5%] h-auto w-full"
-            />
-          </div>
+            </SignatureComposition>
+          </Parallax>
         </div>
       </div>
 

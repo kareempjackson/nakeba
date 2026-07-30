@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { CtaButton } from "./cta-button";
+import { Parallax } from "./parallax";
+import { Reveal } from "./reveal";
 
 /** Placeholder for now — swap for the final art-directed crop. */
 const PORTRAIT = "/images/30534.jpg";
@@ -27,20 +29,22 @@ export function Meet() {
         </div>
 
         <div className="mt-20 grid gap-x-10 gap-y-12 md:grid-cols-2 lg:mt-32 lg:grid-cols-12">
-          <div className="relative aspect-3/4 overflow-hidden rounded-md bg-brand-surface md:col-span-1 lg:col-span-2">
-            <Image
-              src={PORTRAIT}
-              alt="Nakeba Mason"
-              fill
-              sizes="(min-width: 1024px) 17vw, (min-width: 768px) 45vw, 100vw"
-              className="object-cover"
-            />
-          </div>
+          <Reveal className="relative aspect-3/4 overflow-hidden rounded-md bg-brand-surface md:col-span-1 lg:col-span-2">
+            <Parallax distance={24} className="absolute -inset-8">
+              <Image
+                src={PORTRAIT}
+                alt="Nakeba Mason, photographed at work"
+                fill
+                sizes="(min-width: 1024px) 17vw, (min-width: 768px) 45vw, 100vw"
+                className="object-cover"
+              />
+            </Parallax>
+          </Reveal>
 
           {/* NOTE: this paragraph is duplicated verbatim in the "What I Take Off
               Your Plate" comp. Kept in both per the designs — worth confirming
               it is intentional. */}
-          <div className="lg:col-span-3 lg:col-start-4">
+          <Reveal delay={0.12} className="lg:col-span-3 lg:col-start-4">
             <p className="text-[15px] leading-relaxed">
               That career began in 2020, mid-pandemic, while I was two years
               into a psychology degree — which turned out to be the right
@@ -51,9 +55,13 @@ export function Meet() {
             <CtaButton href="#contact" className="mt-12 lg:mt-20">
               Let&rsquo;s talk
             </CtaButton>
-          </div>
+          </Reveal>
 
-          <p className="text-[15px] leading-relaxed lg:col-span-3 lg:col-start-8">
+          <Reveal
+            as="p"
+            delay={0.24}
+            className="text-[15px] leading-relaxed lg:col-span-3 lg:col-start-8"
+          >
             What started as a way to put my strengths to use grew into something
             much bigger, carrying me through banking, digital consultancy,
             creative agencies, e-commerce, and legal — including supporting
@@ -61,7 +69,7 @@ export function Meet() {
             And somewhere along the way, the work revealed what it had always
             been about. Not tasks. Structure. The ability to make fast-moving
             environments feel navigable, and complex operations feel human.
-          </p>
+          </Reveal>
 
           <p className="text-[15px] lg:col-start-12 lg:justify-self-end">
             &copy;2026

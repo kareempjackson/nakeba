@@ -1,4 +1,5 @@
 import { BleedWord } from "./bleed-word";
+import { Reveal } from "./reveal";
 
 /**
  * Two clauses in the source comp run together without punctuation
@@ -20,8 +21,10 @@ export function Credentials() {
     >
       <BleedWord left="Nak" right="eba" align="top" />
 
-      <div className="relative mx-auto w-full max-w-380 px-6 py-24 md:px-10 md:py-32 lg:px-14 lg:py-40">
-        <div className="text-center">
+      {/* As in the Offer section: the mobile padding is the stacked fragment's
+          height plus a gap, easing off once they move to the side margins. */}
+      <div className="relative mx-auto w-full max-w-380 px-6 py-[min(90vw,22rem)] md:px-10 md:py-32 lg:px-14 lg:py-40">
+        <Reveal className="text-center">
           <p
             id="credentials-title"
             className="text-[15px] font-bold tracking-[0.1em]"
@@ -38,11 +41,13 @@ export function Credentials() {
             Professionals &middot; Based in Barbados, partnering with founders
             worldwide
           </p>
-        </div>
+        </Reveal>
 
         <div className="mx-auto mt-24 max-w-176 space-y-6 text-center text-[17px] leading-relaxed text-brand-muted lg:mt-32">
-          {VALUES.map((copy) => (
-            <p key={copy}>{copy}</p>
+          {VALUES.map((copy, i) => (
+            <Reveal key={copy} as="p" delay={i * 0.1}>
+              {copy}
+            </Reveal>
           ))}
         </div>
       </div>

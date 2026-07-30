@@ -132,9 +132,60 @@
   );
 }
 
+/* ==========================================================================
+   ENTRANCE SEQUENCE
+   State lives in `data-preload` on <html>, written before first paint by the
+   boot script and thereafter by the preloader store. See
+   `app/_components/preloader/`.
+   ========================================================================== */
+
+/* The curtain COVERS the page; it never hides it. The page underneath is
+   painted and correct from the first frame — which is what makes the handoff a
+   formality rather than a swap, and what keeps the hero's wordmark eligible as
+   the LCP element. Hiding the content instead (opacity/visibility/display on
+   the page wrapper) is the obvious shortcut and it would push LCP from ~0.4s to
+   ~2.6s, because Chrome scores zero-opacity elements as unpainted but does not
+   occlusion-test what's behind an overlay. Do not "simplify" this. */
+html[data-preload="playing"] {
+  /* Locks <html>, deliberately: the header menu owns `body.style.overflow`, so
+     the two locks share no lever and cannot clobber each other. */
+  overflow: hidden;
+  /* `scroll-behavior: smooth` above would animate any programmatic scroll over
+     ~500ms and corrupt the handoff measurement. */
+  scroll-behavior: auto;
+}
+
+/* The staged pieces start invisible, in CSS rather than in React, so they are
+   already hidden in the server-rendered HTML — before the bundle has loaded and
+   before anything could set an inline style. Otherwise a slow connection paints
+   the finished composition, then blanks it to animate. framer's inline styles
+   take over from the first frame of each beat and outrank these. */
+html[data-preload="playing"] [data-preloader] :is([data-sig], [data-stage-card], [data-stage-mono]) {
+  opacity: 0;
+}
+
+/* Clones are still landing, but the page has its scroll and its clicks back. */
+html[data-preload="handoff"] [data-preloader] {
+  pointer-events: none;
+}
+
+html[data-preload="done"] [data-preloader] {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /* Evaluated at parse time, so these visitors never see the curtain at all —
+     not even in the server-rendered HTML, before any script has run. */
+  [data-preloader] {
+    display: none !important;
+  }
+
+  html[data-preload="playing"] {
+    overflow: visible;
   }
 
   *,

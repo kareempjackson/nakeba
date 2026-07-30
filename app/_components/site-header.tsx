@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { ScrollProgress } from "./scroll-progress";
 
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
@@ -11,11 +12,40 @@ const NAV_LINKS = [
   { label: "About Me", href: "#about-me" },
 ];
 
+/**
+ * Foot of the mobile menu. Add profile URLs and these render as links instead
+ * of plain labels — the same arrangement the site footer uses.
+ */
+const SOCIALS = [{ label: "LI", href: "" }];
+
+/** The braces are set off from the label and lighter than it. */
+const BRACE = "text-brand-ink/30";
+
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const headerRef = useRef<HTMLElement>(null);
+  // Measured on the bar, not the header: with the mobile panel open the header
+  // is as tall as the screen, which would throw the section line off.
+  const barRef = useRef<HTMLDivElement>(null);
   // The design marks the current section with a filled dot.
   const [current, setCurrent] = useState(NAV_LINKS[0].href);
+
+  useEffect(() => {
+    if (!open) return;
+
+    // The panel covers the screen, so the page behind it holds still — and
+    // Escape closes it, the way any full-screen overlay should.
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
 
   useEffect(() => {
     /*
@@ -29,7 +59,7 @@ export function SiteHeader() {
 
     const update = () => {
       frame = 0;
-      const line = (headerRef.current?.offsetHeight ?? 0) + 1;
+      const line = (barRef.current?.offsetHeight ?? 0) + 1;
       let active = NAV_LINKS[0].href;
       for (const link of NAV_LINKS) {
         const top = document
@@ -55,9 +85,16 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-50 bg-brand-white">
-      <div className="mx-auto flex w-full max-w-380 items-center justify-between gap-8 px-6 py-5 md:px-10 lg:px-14">
+    <header className="sticky top-0 z-50 bg-brand-white">
+      <ScrollProgress />
+      <div
+        ref={barRef}
+        className="mx-auto flex w-full max-w-380 items-center justify-between gap-8 px-6 py-5 md:px-10 lg:px-14"
+      >
         <a href="#home" aria-label="Nakeba Mason — home" className="shrink-0">
+          {/* `data-flip-target` is where the entrance sequence lands its
+              monogram. On the image, not the link: the <a> is inline, so its
+              box picks up line-height leading and wouldn't match. */}
           <Image
             src="/logo/header-logo.svg"
             alt="Nakeba Mason"
@@ -65,6 +102,7 @@ export function SiteHeader() {
             height={30}
             unoptimized
             priority
+            data-flip-target="header-logo"
             className="h-9 w-auto md:h-11"
           />
         </a>
@@ -128,30 +166,63 @@ export function SiteHeader() {
         </button>
       </div>
 
-      {/* Mobile panel */}
+      {/*
+        Mobile panel: fills the screen under the bar, so the menu is the whole
+        view rather than a tray over the page. Display is toggled by class, not
+        the `hidden` attribute — a display utility would override it.
+      */}
       <nav
         id="mobile-nav"
         aria-label="Main"
-        hidden={!open}
-        className="border-t border-brand-line px-6 pb-6 md:px-10 lg:hidden"
+        className={`h-[calc(100svh-4.75rem)] flex-col justify-between overflow-y-auto bg-brand-canvas px-6 pt-12 pb-12 md:h-[calc(100svh-5.25rem)] md:px-10 lg:hidden ${
+          open ? "flex" : "hidden"
+        }`}
       >
-        <ul className="flex flex-col">
-          {NAV_LINKS.map((link) => (
-            <li key={link.href}>
-              <a
-                href={link.href}
-                onClick={() => setOpen(false)}
-                aria-current={link.href === current ? "page" : undefined}
-                className="flex items-center gap-2.5 border-b border-brand-line py-4 text-base last:border-0"
-              >
-                <span
-                  aria-hidden
-                  className={`size-2 shrink-0 rounded-full bg-brand-ink transition-opacity ${
-                    link.href === current ? "opacity-100" : "opacity-0"
-                  }`}
-                />
-                {link.label}
-              </a>
+        <ul className="flex flex-col gap-14">
+          {NAV_LINKS.map((link) => {
+            const isCurrent = link.href === current;
+            return (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  aria-current={isCurrent ? "page" : undefined}
+                  className="inline-flex items-center gap-5 text-[13px] tracking-eyebrow transition-opacity hover:opacity-60"
+                >
+                  {/* The braces carry the current-section marker here: full ink
+                      on the section being read, faint on the rest. */}
+                  <span aria-hidden className={isCurrent ? undefined : BRACE}>
+                    &#123;
+                  </span>
+                  {link.label}
+                  <span aria-hidden className={isCurrent ? undefined : BRACE}>
+                    &#125;
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+
+        <ul className="flex flex-wrap items-center gap-x-12 gap-y-4 text-[13px] tracking-eyebrow">
+          {SOCIALS.map((social) => (
+            <li key={social.label} className="inline-flex items-center gap-2.5">
+              <span aria-hidden className={BRACE}>
+                &#123;
+              </span>
+              {social.href ? (
+                <a
+                  href={social.href}
+                  className="transition-opacity hover:opacity-60"
+                >
+                  {social.label}
+                </a>
+              ) : (
+                social.label
+              )}
+              <span aria-hidden className={BRACE}>
+                &#125;
+              </span>
             </li>
           ))}
         </ul>
