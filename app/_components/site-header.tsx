@@ -91,7 +91,13 @@ export function SiteHeader() {
         ref={barRef}
         className="mx-auto flex w-full max-w-380 items-center justify-between gap-8 px-6 py-5 md:px-10 lg:px-14"
       >
-        <a href="#home" aria-label="Nakeba Mason — home" className="shrink-0">
+        <a
+          href="#home"
+          aria-label="Nakeba Mason — home"
+          /* The logo is artwork, so there's no text for the cursor to lift. */
+          data-cursor-label="Home"
+          className="shrink-0"
+        >
           {/* `data-flip-target` is where the entrance sequence lands its
               monogram. On the image, not the link: the <a> is inline, so its
               box picks up line-height leading and wouldn't match. */}

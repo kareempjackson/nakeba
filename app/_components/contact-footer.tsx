@@ -75,6 +75,8 @@ export function ContactFooter() {
             its label on mobile so the two read as one block. */}
         <a
           href={`mailto:${EMAIL}`}
+          /* The address is far too long to set inside the cursor's disc. */
+          data-cursor-label="Email"
           className="order-3 -mt-4 block text-[clamp(2.25rem,9vw,10rem)] leading-[0.85] font-bold tracking-[-0.055em] break-all uppercase transition-opacity hover:opacity-70 md:order-0 md:mt-0"
         >
           <span className="block">Hello@</span>

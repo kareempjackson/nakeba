@@ -51,7 +51,7 @@ const STRUCTURED_DATA = {
       name: SITE_NAME,
       url: SITE_URL,
       email: `mailto:${SITE_EMAIL}`,
-      image: `${SITE_URL}/opengraph-image`,
+      image: `${SITE_URL}/og.png`,
       jobTitle: SITE_ROLE,
       description: SITE_DESCRIPTION,
       knowsAbout: CAPABILITIES,
