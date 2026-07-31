@@ -5,9 +5,31 @@
  * `NEXT_PUBLIC_SITE_URL` overrides the domain for previews and staging; the
  * fallback is the production domain (the one the contact address is on).
  */
-export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://nakebamason.com"
-).replace(/\/+$/, "");
+/**
+ * The origin this deployment is actually reachable at. Every absolute URL the
+ * site publishes — OG images, canonicals, the sitemap, the structured data —
+ * is built on it, so it has to name a host that really serves these files.
+ *
+ * Order matters:
+ *  1. `NEXT_PUBLIC_SITE_URL`, when a domain is being pinned deliberately.
+ *  2. Vercel's production domain for this project, which follows the custom
+ *     domain automatically once one is attached.
+ *  3. The per-deployment URL, so previews advertise themselves.
+ *  4. The eventual home, for local builds.
+ *
+ * Read on the server only — no client component imports this module, which is
+ * what lets the un-prefixed Vercel variables be used at all.
+ */
+function resolveSiteUrl() {
+  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  }
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return "https://nakebamason.com";
+}
+
+export const SITE_URL = resolveSiteUrl().replace(/\/+$/, "");
 
 export const SITE_NAME = "Nakeba Mason";
 
