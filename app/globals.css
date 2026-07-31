@@ -42,9 +42,13 @@
      Lifted just off pure black so the ink signature still reads as the
      darkest thing in the system. */
   --color-brand-night: #1a1a1a;
-  /* Secondary copy on Night. 7.23:1 — clears AA for body text, so unlike
-     Ghost this one may carry real content. */
-  --color-brand-night-muted: #a8a7a3;
+  /* Secondary copy on the dark grounds — every grey on Night and Ink resolves
+     here. 10.29:1 on Night, 12.41:1 on Ink: comfortably past AA, and set this
+     bright on purpose. Body copy reversed out of a dark ground reads lighter
+     than the same ratio does on white, so matching the light side's numbers
+     leaves it looking dimmer than it measures. Unlike Ghost, this one carries
+     real content. */
+  --color-brand-night-muted: #c8c7c3;
 
   /* --- Derived: soft tints (hue + white) ------------------------------
      For large washes and section grounds where the core hue is too strong. */

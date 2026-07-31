@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Approach } from "./_components/approach";
+import { CaseStudy } from "./_components/case-study";
 import { Contact } from "./_components/contact";
 import { ContactFooter } from "./_components/contact-footer";
 import { Credentials } from "./_components/credentials";
@@ -14,7 +15,6 @@ import { Result } from "./_components/result";
 import { SiteFooter } from "./_components/site-footer";
 import { SiteHeader } from "./_components/site-header";
 import { CAPABILITIES } from "./_components/site-data";
-import { Stats } from "./_components/stats";
 import {
   SITE_DESCRIPTION,
   SITE_EMAIL,
@@ -111,7 +111,7 @@ export default function Home() {
             again.
           */}
           <EdgeReveal>
-            <Stats />
+            <CaseStudy />
             <Contact />
             <NextStep />
           </EdgeReveal>

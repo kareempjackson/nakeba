@@ -6,7 +6,7 @@ const EMAIL = "hello@nakebamason.com";
  * nearest real sections for now — worth reconciling.
  */
 const LINKS = [
-  { label: "Our Work", href: "#by-the-numbers" },
+  { label: "Our Work", href: "#case-study" },
   { label: "Services", href: "#what-i-take-off-your-plate" },
   { label: "Contact", href: "#contact" },
 ];
@@ -128,7 +128,7 @@ export function ContactFooter() {
             </ul>
           </div>
 
-          <p className="mt-6 text-[11px] tracking-[0.12em] text-brand-white/60 uppercase">
+          <p className="mt-6 text-[11px] tracking-[0.12em] text-brand-white/75 uppercase">
             Design by{" "}
             <a
               href="https://ghostsavvy.com"

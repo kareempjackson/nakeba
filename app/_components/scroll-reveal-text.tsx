@@ -19,7 +19,7 @@ const FILL = {
   /** Light grounds: ghost grey → ink. */
   ink: ["#d8d7d4", "#000000"],
   /** Dark grounds: night muted → white. */
-  white: ["#a8a7a3", "#ffffff"],
+  white: ["#c8c7c3", "#ffffff"],
 } as const;
 
 type Tone = keyof typeof FILL;
