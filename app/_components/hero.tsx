@@ -1,6 +1,7 @@
 import { CtaButton } from "./cta-button";
 import { HeroCardStack } from "./hero-card-stack";
 import { Parallax } from "./parallax";
+import { ScrollCue } from "./scroll-cue";
 import { ScrollRevealText } from "./scroll-reveal-text";
 import { SignatureComposition } from "./signature-composition";
 import { SITE_NAME, SITE_ROLE } from "../site";
@@ -19,6 +20,11 @@ const POSITIONING =
 export function Hero() {
   return (
     <section id="home" className="relative overflow-hidden">
+      {/* Fixed to the viewport rather than the fold, so it stays put while the
+          hero moves under it — and `overflow-hidden` above doesn't clip it,
+          since nothing on the way up carries a transform. */}
+      <ScrollCue />
+
       {/*
         The fold: capabilities, pitch and the full signature composition are
         sized to land inside one viewport (minus the sticky header, 4.75rem on

@@ -171,7 +171,18 @@ html[data-preload="playing"] {
    before anything could set an inline style. Otherwise a slow connection paints
    the finished composition, then blanks it to animate. framer's inline styles
    take over from the first frame of each beat and outrank these. */
-html[data-preload="playing"] [data-preloader] :is([data-sig], [data-stage-card], [data-stage-mono]) {
+/* The two wordmarks are named individually rather than matched as `[data-sig]`:
+   that attribute is also on the card slot, and hiding the slot takes the whole
+   deck with it — the cards animate correctly inside a container that never
+   becomes visible, which looks exactly like the deal never running. */
+html[data-preload="playing"]
+  [data-preloader]
+  :is(
+    [data-sig="nakeba"],
+    [data-sig="mason"],
+    [data-stage-card],
+    [data-stage-mono]
+  ) {
   opacity: 0;
 }
 

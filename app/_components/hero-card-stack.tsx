@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
+  useAnimationControls,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -17,17 +19,30 @@ import { useCurtainLifted } from "./preloader/preloader-store";
 /**
  * Placeholders for now — swap for the final art-directed crops.
  *
+ * One row per deal, back card first. Clicking the deck shuffles to the next
+ * row and wraps around at the end.
+ *
  * The brand colour behind each photo is kept as the card's ground, so the deck
  * still reads as the designed composition in the moment before the images
- * decode, and around the rounded corners.
+ * decode, and around the rounded corners. That covers the swap too: rows after
+ * the first aren't fetched until the deck is first shuffled.
  *
- * The entrance sequence deals a copy of this same deck, so anything changed
- * here must be changed in `preloader/stage-cards.tsx` too or the cards will
+ * The entrance sequence deals a copy of the FIRST ROW, so anything changed
+ * there must be changed in `preloader/stage-cards.tsx` too or the cards will
  * visibly swap photos as they land.
  */
-const PHOTO_BACK = "/images/30532.jpg";
-const PHOTO_MIDDLE = "/images/30530.jpg";
-const PHOTO_FRONT = "/images/30532.jpg";
+const DEALS = [
+  ["/images/30532.jpg", "/images/30530.jpg", "/images/30532.jpg"],
+  ["/images/30527.jpg", "/images/30528.jpg", "/images/30529.jpg"],
+  ["/images/30531.jpg", "/images/30533.jpg", "/images/30534.jpg"],
+];
+
+/**
+ * When the photos change, in ms after a shuffle starts. Lands between the
+ * riffle and the cross — the cards are furthest apart and moving fastest, so
+ * the swap happens inside the gesture rather than in front of it.
+ */
+const SWAP_AT = 620;
 
 /** Matches the front card's, so all three resolve the same srcset candidate. */
 const SIZES = "(min-width: 1024px) 28vw, (min-width: 640px) 32vw, 38vw";
@@ -135,7 +150,42 @@ export function HeroCardStack() {
   const over = useMotionValue(0);
   const fan = useSpring(over, { stiffness: 180, damping: 24, mass: 0.5 });
 
-  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+  /*
+    Two counters, deliberately: `deal` only ever climbs and is what re-runs the
+    shuffle — the same keyframes twice over wouldn't replay on their own — while
+    `hand` is which row of photos is showing. They're separate because the
+    photos change part-way through the shuffle, not at the click.
+  */
+  const [deal, setDeal] = useState(0);
+  const [hand, setHand] = useState(0);
+  const swap = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const shuffle = () => {
+    if (swap.current) clearTimeout(swap.current);
+
+    if (reduceMotion) {
+      /* No gesture to hide the change behind, so just show the next hand. */
+      setHand((current) => (current + 1) % DEALS.length);
+      return;
+    }
+
+    setDeal((current) => current + 1);
+    swap.current = setTimeout(
+      () => setHand((current) => (current + 1) % DEALS.length),
+      SWAP_AT,
+    );
+  };
+
+  useEffect(
+    () => () => {
+      if (swap.current) clearTimeout(swap.current);
+    },
+    [],
+  );
+
+  const photos = DEALS[hand];
+
+  const onPointerMove = (event: React.PointerEvent<HTMLElement>) => {
     /* A touch drag shouldn't leave the deck leaning where the finger left. */
     if (event.pointerType !== "mouse") return;
     /* Read in the event, before framer's writes land in the following frame,
@@ -166,8 +216,18 @@ export function HeroCardStack() {
   });
 
   return (
-    <div
-      className="relative aspect-5/7"
+    /*
+      A real button, not a div with a click handler: shuffling the deck is a
+      control, so it belongs on the keyboard and in the accessibility tree. The
+      photos are decorative either way — the label says what the control does,
+      not what's on the cards.
+    */
+    <button
+      type="button"
+      onClick={shuffle}
+      aria-label="Shuffle the photos"
+      data-cursor-label="Shuffle"
+      className="relative block aspect-5/7 w-full"
       style={{ perspective: PERSPECTIVE }}
       onPointerMove={reduceMotion ? undefined : onPointerMove}
       onPointerLeave={reduceMotion ? undefined : release}
@@ -181,6 +241,7 @@ export function HeroCardStack() {
         leanY={leanY}
         stir={stir}
         fan={fan}
+        deal={deal}
         lean={{ shift: 13, tilt: 14 }}
         play={play}
         reduceMotion={reduceMotion ?? false}
@@ -195,7 +256,7 @@ export function HeroCardStack() {
         aria-hidden
       >
         <Image
-          src={PHOTO_BACK}
+          src={photos[0]}
           alt=""
           fill
           sizes={SIZES}
@@ -214,6 +275,7 @@ export function HeroCardStack() {
         leanY={leanY}
         stir={stir}
         fan={fan}
+        deal={deal}
         lean={{ shift: 8, tilt: 10 }}
         play={play}
         reduceMotion={reduceMotion ?? false}
@@ -228,7 +290,7 @@ export function HeroCardStack() {
         aria-hidden
       >
         <Image
-          src={PHOTO_MIDDLE}
+          src={photos[1]}
           alt=""
           fill
           sizes={SIZES}
@@ -245,6 +307,7 @@ export function HeroCardStack() {
         leanY={leanY}
         stir={stir}
         fan={fan}
+        deal={deal}
         lean={{ shift: 3.5, tilt: 6 }}
         play={play}
         reduceMotion={reduceMotion ?? false}
@@ -258,7 +321,7 @@ export function HeroCardStack() {
         className="overflow-hidden bg-brand-surface shadow-[0_18px_45px_-20px_rgba(0,0,0,0.35)]"
       >
         <Image
-          src={PHOTO_FRONT}
+          src={photos[2]}
           alt="Nakeba Mason"
           fill
           sizes={SIZES}
@@ -266,7 +329,7 @@ export function HeroCardStack() {
           className="object-cover object-top"
         />
       </Card>
-    </div>
+    </button>
   );
 }
 
@@ -277,6 +340,7 @@ function Card({
   lean,
   stir,
   fan,
+  deal,
   play,
   reduceMotion,
   keyframes,
@@ -296,6 +360,8 @@ function Card({
   stir: MotionValue<number>;
   /** Whether the pointer is over the deck at all, 0–1. */
   fan: MotionValue<number>;
+  /** Climbs on every click; each new value re-runs the shuffle. */
+  deal: number;
   /** False while the entrance sequence still owns the screen. */
   play: boolean;
   reduceMotion: boolean;
@@ -370,13 +436,36 @@ function Card({
     rotate: keyframes.rotate[0],
   };
 
+  /*
+    Driven imperatively rather than by an `animate` prop, because the shuffle
+    has to run again on a value that hasn't changed: the same keyframes ending
+    in the same rest pose. Declaratively that's a no-op the second time. `deal`
+    in the dependencies is the whole mechanism — a click bumps it and the deck
+    re-deals from wherever the cards happen to be.
+  */
+  const controls = useAnimationControls();
+
+  useEffect(() => {
+    if (reduceMotion) {
+      controls.set(restState);
+      return;
+    }
+    if (!play) {
+      controls.set(squared);
+      return;
+    }
+    controls.start(keyframes, { ...SHUFFLE, delay });
+    /* The pose objects are rebuilt every render; `deal` and `play` are what
+       actually decide whether this runs. */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [controls, deal, play, reduceMotion, delay]);
+
   return (
-    // Outer layer: the one-off load shuffle.
+    // Outer layer: the load shuffle, re-run on every deal.
     <motion.div
       className="absolute inset-0"
       initial={reduceMotion ? false : squared}
-      animate={reduceMotion ? restState : play ? keyframes : squared}
-      transition={reduceMotion ? { duration: 0 } : { ...SHUFFLE, delay }}
+      animate={controls}
     >
       {/* Middle layer: the pointer lean. Its own element so following the
           mouse doesn't contend with the shuffle above or the riffle below —

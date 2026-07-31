@@ -106,12 +106,32 @@ export function Preloader() {
     const html = document.documentElement;
     const running = new Set<Controls>();
     const timers = new Set<ReturnType<typeof setTimeout>>();
+    /* The page's own signature and logo, while the clones are in flight. */
+    const hidden = new Set<HTMLElement>();
     let speed = 1;
     let finished = false;
+
+    function hide(element: HTMLElement) {
+      hidden.add(element);
+      element.style.opacity = "0";
+    }
+
+    /**
+     * Every exit runs through here — normal completion, skip, watchdog, unmount
+     * — because the one unacceptable failure is leaving the real hero invisible
+     * behind a curtain that has already gone.
+     */
+    function reveal() {
+      hidden.forEach((element) => {
+        element.style.opacity = "";
+      });
+      hidden.clear();
+    }
 
     function finish() {
       if (finished) return;
       finished = true;
+      reveal();
       teardown();
       running.forEach((control) => control.stop());
       running.clear();
@@ -326,22 +346,25 @@ export function Preloader() {
 
       /* 4 — the handoff. Measured now rather than up front, so the target is
          where it will actually be. Every read happens before any write. */
+      const heroSignature = document.querySelector<HTMLElement>(
+        '[data-flip-target="hero-signature"]',
+      );
+      const headerLogo = document.querySelector<HTMLElement>(
+        '[data-flip-target="header-logo"]',
+      );
+      if (!heroSignature || !headerLogo) {
+        finish();
+        return;
+      }
+
       const target = {
-        signature: document
-          .querySelector('[data-flip-target="hero-signature"]')
-          ?.getBoundingClientRect(),
-        logo: document
-          .querySelector('[data-flip-target="header-logo"]')
-          ?.getBoundingClientRect(),
+        signature: heroSignature.getBoundingClientRect(),
+        logo: headerLogo.getBoundingClientRect(),
       };
       const from = {
         signature: signature!.getBoundingClientRect(),
         logo: mono!.getBoundingClientRect(),
       };
-      if (!target.signature || !target.logo) {
-        finish();
-        return;
-      }
 
       /* Place, then invert — both writes and the read between them happen in
          this one task, so the browser never paints the clones sitting on their
@@ -363,21 +386,27 @@ export function Preloader() {
       signature!.style.transform = asTransform(liftSignature);
       mono!.style.transform = asTransform(liftLogo);
 
-      /* Hand the page back at 82% of the flight: its own deck picks up the
-         shuffle while the clones are still settling, so the entrance dissolves
-         into the page's motion instead of stopping. */
-      track(
-        animate(0, 1, {
-          duration: t(0.47),
-          ease: "linear",
-          onComplete: () => setStage("handoff"),
-        }),
-      );
+      /*
+        The page's own signature and logo now step aside for the flight.
+
+        They have been painted since first paint, under the curtain — that is
+        what let the wordmark register as the LCP element at half a second, and
+        hiding them now doesn't retract it, because an element is only ever
+        scored once. What it does fix is the arrival: the ground fades while the
+        clones are still travelling, so leaving these visible meant the hero
+        resolved into place and *then* a second copy of itself flew in on top.
+        With them hidden the composition lands into an empty hero and stays
+        there, which is the whole illusion.
+
+        Hidden rather than removed, so the layout underneath never moves.
+      */
+      hide(heroSignature);
+      hide(headerLogo);
 
       await track(
         animate([
-          /* The ground goes first and fastest — the real page is revealed
-             while the clones are still in the air. */
+          /* The ground goes first and fastest — the rest of the page is
+             revealed while the clones are still in the air. */
           [
             "[data-ground]",
             { opacity: [1, 0] },
@@ -404,8 +433,21 @@ export function Preloader() {
       );
       if (finished) return;
 
-      /* The clones are sitting on pixels identical to themselves; this only
-         covers sub-pixel rounding. */
+      /*
+        The swap. The clones are laid out in their targets' exact boxes now, so
+        the real elements come back at full strength *underneath* them — no
+        cross-fade, which would dip through a half-transparent double image and
+        expose any sub-pixel disagreement. Fading the clones off simply uncovers
+        the identical thing behind them.
+
+        The page gets its scroll and its deck back in the same frame: the deck's
+        shuffle opens on the squared pose the clones are resting in, and its
+        per-card delays mean nothing has actually moved by the time they're
+        gone.
+      */
+      reveal();
+      setStage("handoff");
+
       await track(
         animate(
           "[data-stage]",
@@ -419,6 +461,7 @@ export function Preloader() {
     play().catch(finish);
 
     return () => {
+      reveal();
       teardown();
       running.forEach((control) => control.stop());
       running.clear();

@@ -8,10 +8,12 @@ import { Parallax } from "./parallax";
  *
  * There's no room for two fragments side by side on a phone, so below `md`
  * they stack instead: one above the content, one below, both left-aligned and
- * running off the right edge. `text-brand-ghost` is the token's own use case —
- * display type set as texture, never as read-first content.
+ * running off the right edge.
  *
- * Purely decorative: the readable name lives in the logo and headings.
+ * Set in Ink, at full weight — the signature, not a watermark. Purely
+ * decorative all the same: the readable name lives in the logo and headings,
+ * and the sections that use this keep their copy clear of the fragments rather
+ * than setting anything on top of them.
  */
 export function BleedWord({
   left,
@@ -29,7 +31,7 @@ export function BleedWord({
     the copy in the middle always has air around it. Change one, change both.
   */
   const type =
-    "block text-[min(70vw,17rem)] leading-none font-bold tracking-display text-brand-ghost md:text-[clamp(6rem,21vw,25rem)]";
+    "block text-[min(70vw,17rem)] leading-none font-bold tracking-display text-brand-ink md:text-[clamp(6rem,21vw,25rem)]";
 
   return (
     <div
