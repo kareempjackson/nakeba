@@ -37,7 +37,7 @@ export function Approach() {
             className="text-[clamp(1.875rem,3.6vw,4.75rem)] leading-[1.15] font-light tracking-display [word-spacing:-0.03em] lg:ml-[20%] lg:indent-[13%]"
           >
             I don&rsquo;t come in to manage tasks. I come in to understand your
-            business how{" "}
+            business, how{" "}
             {/* The tail starts muted and fills to white as the reader scrolls
                 through it — the second half of the thought arriving. */}
             <ScrollRevealText

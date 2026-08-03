@@ -1,4 +1,5 @@
 import { CtaButton } from "./cta-button";
+import { BOOKING_URL } from "./site-data";
 import { HeroCardStack } from "./hero-card-stack";
 import { Parallax } from "./parallax";
 import { ScrollCue } from "./scroll-cue";
@@ -54,7 +55,7 @@ export function Hero() {
               behind it.
             </p>
 
-            <CtaButton href="#contact" className="mt-6">
+            <CtaButton href={BOOKING_URL} className="mt-6">
               Let&rsquo;s talk
             </CtaButton>
           </div>

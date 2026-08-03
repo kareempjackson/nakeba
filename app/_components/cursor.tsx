@@ -186,7 +186,14 @@ export function Cursor() {
 function labelFor(element: HTMLElement) {
   if (element.dataset.cursorLabel) return element.dataset.cursorLabel;
 
-  const text = (element.textContent ?? "")
+  /* An `aria-label` is the control's human name, and it wins over the letters
+     on screen: the footer's LinkedIn link is drawn as "LI" but named in full,
+     and the disc has room to say so. */
+  return fit(element.getAttribute("aria-label")) || fit(element.textContent);
+}
+
+function fit(value: string | null) {
+  const text = (value ?? "")
     /* The footer and menu wrap their labels in decorative braces. */
     .replace(/[{}]/g, " ")
     .replace(/\s+/g, " ")

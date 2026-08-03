@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { CtaButton } from "./cta-button";
+import { BOOKING_URL } from "./site-data";
 import { Parallax } from "./parallax";
 import { Reveal } from "./reveal";
 import { ScrollRevealText } from "./scroll-reveal-text";
@@ -95,7 +96,7 @@ export function Problem() {
             </div>
 
             <Reveal delay={0.3}>
-              <CtaButton href="#contact" className="mt-12 lg:mt-20">
+              <CtaButton href={BOOKING_URL} className="mt-12 lg:mt-20">
                 Let&rsquo;s talk
               </CtaButton>
             </Reveal>

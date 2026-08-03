@@ -1,5 +1,5 @@
 import { CtaButton } from "./cta-button";
-import { CAPABILITIES, PITCH } from "./site-data";
+import { BOOKING_URL, CAPABILITIES, PITCH } from "./site-data";
 
 export function SiteFooter() {
   return (
@@ -17,7 +17,7 @@ export function SiteFooter() {
 
           <div className="lg:col-span-3 lg:col-start-10">
             <p className="max-w-xs text-[17px] leading-relaxed">{PITCH}</p>
-            <CtaButton href="#contact" className="mt-8">
+            <CtaButton href={BOOKING_URL} className="mt-8">
               Let&rsquo;s talk
             </CtaButton>
           </div>

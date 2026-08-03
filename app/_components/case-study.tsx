@@ -8,7 +8,7 @@ import { ScrollRevealText } from "./scroll-reveal-text";
  * rather than a deliberate run-on, it wants an em dash and a capital.
  */
 const SITUATION =
-  "a talented team, a growing client list, and a founder carrying all of it. Every client request, every follow-up, every team brief ran through Dwayne. The work was strong; the operations behind it depended entirely on him. In his own words: work overload, with too much of his time spent liaising with clients instead of leading the studio.";
+  "A talented team, a growing client list, and a founder carrying all of it. Every client request, every follow-up, every team brief ran through Dwayne. The work was strong; the operations behind it depended entirely on him. In his own words: work overload, with too much of his time spent liaising with clients instead of leading the studio.";
 
 const PARTNERSHIP =
   "I came in on a three-month starting retainer — my standard first step, so both sides confirm the fit before committing long-term. From there, I embedded into the way BEKO works: I became the point of contact between clients, founder, and team — requests, follow-ups, approvals. I brief the lead designers when new work comes in and keep Dwayne briefed on what needs his attention, coordinate and track projects in Asana so nothing lives in memory, and run meetings from scheduling through notes to action-item follow-up. I've built the studio's operational backbone — equipment tracking, a client contact database, and a regional network of creators, from voice actors and photographers to videographers and influencers. And I'm in the room when it matters: client meetings, shoots, and strategy conversations about the studio's growth.";

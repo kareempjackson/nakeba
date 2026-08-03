@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { CtaButton } from "./cta-button";
+import { BOOKING_URL } from "./site-data";
 import { Parallax } from "./parallax";
 import { Reveal } from "./reveal";
 
@@ -77,7 +78,7 @@ export function Plate() {
               and how they move.
             </p>
 
-            <CtaButton href="#contact" variant="light" className="mt-8">
+            <CtaButton href={BOOKING_URL} variant="light" className="mt-8">
               Start a project
             </CtaButton>
           </Reveal>

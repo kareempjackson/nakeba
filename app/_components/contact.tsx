@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { CtaButton } from "./cta-button";
+import { BOOKING_URL } from "./site-data";
 import { Parallax } from "./parallax";
 import { Reveal } from "./reveal";
 
@@ -28,7 +29,7 @@ export function Contact() {
               felt familiar.
             </p>
 
-            <CtaButton href="mailto:hello@nakebamason.com" className="mt-8">
+            <CtaButton href={BOOKING_URL} className="mt-8">
               Book a clarity call
             </CtaButton>
           </Reveal>
