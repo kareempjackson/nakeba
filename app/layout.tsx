@@ -4,6 +4,7 @@ import { Cursor } from "./_components/cursor";
 import { BootScript } from "./_components/preloader/boot-script";
 import { Preloader } from "./_components/preloader/preloader";
 import {
+  SHARE_IMAGE,
   SITE_DESCRIPTION,
   SITE_NAME,
   SITE_ROLE,
@@ -11,17 +12,8 @@ import {
 } from "./site";
 import "./globals.css";
 
-/**
- * The card platforms show when the site is shared. A static file rather than
- * the `opengraph-image` route convention, so that the JSON-LD in `page.tsx` can
- * point at the same asset — the convention's URL carries a build hash and isn't
- * addressable from anywhere else.
- *
- * Deliberately no `width`/`height`: they'd have to be restated here every time
- * the artwork changes, and stale dimensions render worse than absent ones.
- * Every platform measures the image on fetch.
- */
-const SHARE_IMAGE = "/og.png";
+/** Every card carries the same picture, alt text and measurements. */
+const SHARE_IMAGE_CARD = { ...SHARE_IMAGE, alt: `${SITE_NAME} — ${SITE_ROLE}` };
 
 export const metadata: Metadata = {
   // Lets every URL-shaped field below (OG images, canonicals) be relative.
@@ -52,13 +44,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: `${SITE_NAME} — ${SITE_ROLE}`,
     description: SITE_DESCRIPTION,
-    images: [{ url: SHARE_IMAGE, alt: `${SITE_NAME} — ${SITE_ROLE}` }],
+    images: [SHARE_IMAGE_CARD],
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE_NAME} — ${SITE_ROLE}`,
     description: SITE_DESCRIPTION,
-    images: [{ url: SHARE_IMAGE, alt: `${SITE_NAME} — ${SITE_ROLE}` }],
+    images: [SHARE_IMAGE_CARD],
   },
   robots: {
     index: true,

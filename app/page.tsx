@@ -16,6 +16,7 @@ import { SiteFooter } from "./_components/site-footer";
 import { SiteHeader } from "./_components/site-header";
 import { CAPABILITIES } from "./_components/site-data";
 import {
+  SHARE_IMAGE,
   SITE_DESCRIPTION,
   SITE_EMAIL,
   SITE_NAME,
@@ -51,7 +52,7 @@ const STRUCTURED_DATA = {
       name: SITE_NAME,
       url: SITE_URL,
       email: `mailto:${SITE_EMAIL}`,
-      image: `${SITE_URL}/og.png`,
+      image: `${SITE_URL}${SHARE_IMAGE.url}`,
       jobTitle: SITE_ROLE,
       description: SITE_DESCRIPTION,
       knowsAbout: CAPABILITIES,

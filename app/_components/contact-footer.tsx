@@ -1,24 +1,6 @@
+import { NAV_LINKS, SOCIALS } from "./site-data";
+
 const EMAIL = "hello@nakebamason.com";
-
-/**
- * NOTE: these labels come from the comp but don't match the site's own IA, and
- * they speak as "our" where the rest of the page speaks as "I". Mapped to the
- * nearest real sections for now — worth reconciling.
- */
-const LINKS = [
-  { label: "Our Work", href: "#case-study" },
-  { label: "Services", href: "#what-i-take-off-your-plate" },
-  { label: "Contact", href: "#contact" },
-];
-
-/** Add profile URLs and these render as links instead of plain labels. */
-const SOCIALS = [
-  {
-    label: "LI",
-    name: "LinkedIn",
-    href: "https://www.linkedin.com/in/nakeba-mason/",
-  },
-];
 
 const BRACE = "text-[13px] tracking-[0.12em] uppercase";
 
@@ -48,10 +30,13 @@ export function ContactFooter() {
           </a>
 
           <nav aria-label="Footer" className="order-1 md:order-0">
-            {/* Stacked on mobile: three braced links wrap two-then-one at phone
-                widths, which reads as a mistake rather than a row. */}
-            <ul className="flex flex-col gap-y-3 md:flex-row md:flex-wrap md:items-center md:gap-x-8 lg:gap-x-14">
-              {LINKS.map((link) => (
+            {/* Stacked on mobile: braced links wrap unevenly at phone widths,
+                which reads as a mistake rather than a row. The row carries the
+                whole nav, so the gaps are tighter than the rest of this footer
+                — five braced labels beside "Send a message" won't sit on one
+                line at tablet widths otherwise. */}
+            <ul className="flex flex-col gap-y-3 md:flex-row md:flex-wrap md:items-center md:gap-x-5 lg:gap-x-9">
+              {NAV_LINKS.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
@@ -105,21 +90,17 @@ export function ContactFooter() {
                   <span aria-hidden className="mr-2.5 inline-block">
                     &#123;
                   </span>
-                  {social.href ? (
-                    <a
-                      href={social.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      // The two-letter label is the design; the full name is
-                      // what a screen reader announces.
-                      aria-label={social.name}
-                      className="transition-opacity hover:opacity-60"
-                    >
-                      {social.label}
-                    </a>
-                  ) : (
-                    social.label
-                  )}
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    // The two-letter label is the design; the full name is what
+                    // a screen reader announces.
+                    aria-label={social.name}
+                    className="transition-opacity hover:opacity-60"
+                  >
+                    {social.label}
+                  </a>
                   <span aria-hidden className="ml-2.5 inline-block">
                     &#125;
                   </span>

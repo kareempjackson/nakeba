@@ -3,20 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { ScrollProgress } from "./scroll-progress";
-
-const NAV_LINKS = [
-  { label: "Home", href: "#home" },
-  { label: "The Problem", href: "#the-problem" },
-  { label: "Approach", href: "#approach" },
-  { label: "My Offer", href: "#my-offer" },
-  { label: "About Me", href: "#about-me" },
-];
-
-/**
- * Foot of the mobile menu. Add profile URLs and these render as links instead
- * of plain labels — the same arrangement the site footer uses.
- */
-const SOCIALS = [{ label: "LI", href: "" }];
+import { NAV_LINKS, SOCIALS } from "./site-data";
 
 /** The braces are set off from the label and lighter than it. */
 const BRACE = "text-brand-ink/30";
@@ -216,16 +203,15 @@ export function SiteHeader() {
               <span aria-hidden className={BRACE}>
                 &#123;
               </span>
-              {social.href ? (
-                <a
-                  href={social.href}
-                  className="transition-opacity hover:opacity-60"
-                >
-                  {social.label}
-                </a>
-              ) : (
-                social.label
-              )}
+              <a
+                href={social.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={social.name}
+                className="transition-opacity hover:opacity-60"
+              >
+                {social.label}
+              </a>
               <span aria-hidden className={BRACE}>
                 &#125;
               </span>

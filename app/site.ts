@@ -39,6 +39,32 @@ export const SITE_ROLE = "Strategic Operations Partner for Creative Founders";
 export const SITE_DESCRIPTION =
   "Nakeba Mason is a strategic operations partner for creative founders — building the structure, coordination and follow-through a growing studio runs on.";
 
+/**
+ * The card platforms show when the site is shared, and its true pixel size.
+ *
+ * A static file rather than the `opengraph-image` route convention, so the
+ * JSON-LD can point at the same asset — the convention's URL carries a build
+ * hash and isn't addressable from anywhere else.
+ *
+ * The filename is versioned on purpose. Facebook's scraper (which WhatsApp
+ * shares) caches fetched images by URL for weeks, so re-uploading artwork at a
+ * path it has already seen leaves the old picture in circulation. Bump the
+ * suffix whenever the artwork changes and every cache misses on the next
+ * scrape. Renaming is not enough on its own — the page URL's cached preview
+ * still has to be re-scraped in Facebook's Sharing Debugger.
+ *
+ * The dimensions are stated because WhatsApp decides between a large card and
+ * a small thumbnail before it has finished fetching the image; without them it
+ * often settles for the thumbnail. They must match the file — check with
+ * `sips -g pixelWidth -g pixelHeight public/<file>` after replacing it.
+ */
+export const SHARE_IMAGE = {
+  url: "/og-v2.png",
+  width: 1200,
+  height: 630,
+  type: "image/png",
+} as const;
+
 export const SITE_EMAIL = "hello@nakebamason.com";
 
 /** The retainer, as named on the page. */
