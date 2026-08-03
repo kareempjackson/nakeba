@@ -39,7 +39,7 @@ export function Result() {
           className="mt-10 max-w-132 text-[15px] leading-relaxed text-brand-night-muted lg:mt-12 lg:ml-[23%]"
         >
           I don&rsquo;t come in to manage tasks. I come in to understand your
-          business how it moves, where it stalls, and what it needs to run well
+          business, how it moves, where it stalls, and what it needs to run well
           without you having to oversee every detail.
         </Reveal>
       </div>
