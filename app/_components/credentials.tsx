@@ -1,17 +1,6 @@
 import { BleedWord } from "./bleed-word";
 import { Reveal } from "./reveal";
 
-/**
- * Two clauses in the source comp run together without punctuation
- * ("This business is mine I know…", "in my kitchen I love to cook…").
- * Em dashes added to close them — adjust if the copy intended otherwise.
- */
-const VALUES = [
-  "For me, the work is inseparable from the people behind it. My partnerships are remote, which means trust isn't a nice-to-have — it's the foundation. Transparency, communication, discretion, and showing up when I say I will: these aren't values on a wall. They're how the work gets done. When a founder opens their business to me, I honour that.",
-  "And I understand what they're protecting, because I built something too. This business is mine — I know what it takes to grow one, and I know what it means to trust someone with it.",
-  "When I'm not working, you'll find me in a book, at the gym, on a hiking trail, or in my kitchen — I love to cook, and I take it seriously. Yoga keeps me grounded through all of it.",
-];
-
 export function Credentials() {
   return (
     <section
@@ -42,28 +31,6 @@ export function Credentials() {
             worldwide
           </p>
         </Reveal>
-
-        {/* Justified from `md` up so all three paragraphs sit in one block with
-            flush edges — balancing could only even out lines within a single
-            paragraph, never line the three of them up with each other. The
-            last line of each stays centred (`text-align-last`) so it reads as
-            deliberate rather than as a stranded fragment, and hyphenation
-            keeps the word spacing tight enough to avoid rivers. Below `md` the
-            measure is too narrow to justify without gaping, so it stays
-            centred.
-
-            34rem is chosen off a sweep of the measure: it is where no
-            paragraph is left ending on a one- or two-word line. Wider settings
-            strand "with it." and "honour that." on their own lines; much
-            narrower and the first paragraph starts hyphenating on every
-            line. */}
-        <div className="mx-auto mt-24 max-w-136 space-y-6 text-center text-[17px] leading-relaxed text-brand-muted md:hyphens-auto md:text-justify md:[text-align-last:center] lg:mt-32">
-          {VALUES.map((copy, i) => (
-            <Reveal key={copy} as="p" delay={i * 0.1}>
-              {copy}
-            </Reveal>
-          ))}
-        </div>
       </div>
     </section>
   );
