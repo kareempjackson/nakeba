@@ -1,0 +1,137 @@
+import type { SiteSettings } from "@/sanity/content/types";
+
+const BRACE = "text-[13px] tracking-[0.12em] uppercase";
+
+/** "hello@nakebamason.com" → ["hello@", "nakebamason.com"], one per line. */
+function splitAddress(email: string) {
+  const at = email.indexOf("@");
+  return at === -1 ? [email] : [email.slice(0, at + 1), email.slice(at + 1)];
+}
+
+export function ContactFooter({ settings }: { settings: SiteSettings }) {
+  const { email, footer } = settings;
+
+  return (
+    <footer className="sticky bottom-0 z-0 bg-brand-ink text-brand-white">
+      <div className="flex min-h-112 flex-col gap-8 overflow-hidden px-6 py-8 md:min-h-136 md:justify-between md:gap-12 md:px-8">
+        {/*
+          Top row on desktop; on mobile it dissolves (`display: contents`) so
+          its two children become rows of the column below and can be reordered
+          against the address: links, then "Send a message" directly above the
+          address it belongs to. With the nav in between, that label read as a
+          stray link rather than as the address's own.
+
+          Every child of the column carries an explicit `order-*` for that
+          reason — anything left at the default would sort ahead of all of them.
+          `md:order-0` puts them all back on equal footing, where source order
+          decides and the top row reassembles itself.
+        */}
+        <div className="contents md:flex md:flex-wrap md:items-start md:justify-between md:gap-x-8 md:gap-y-6">
+          {/* Opens the reader's mail client, same as the address below it. */}
+          <a
+            href={`mailto:${email}`}
+            className="order-2 text-[15px] font-bold transition-opacity hover:opacity-60 md:order-0"
+          >
+            {footer.messageLabel}
+          </a>
+
+          <nav aria-label="Footer" className="order-1 md:order-0">
+            {/* Stacked on mobile: braced links wrap unevenly at phone widths,
+                which reads as a mistake rather than a row. The row carries the
+                whole nav, so the gaps are tighter than the rest of this footer
+                — five braced labels beside "Send a message" won't sit on one
+                line at tablet widths otherwise. */}
+            <ul className="flex flex-col gap-y-3 md:flex-row md:flex-wrap md:items-center md:gap-x-5 lg:gap-x-9">
+              {settings.navLinks.map((link, i) => (
+                <li key={i}>
+                  <a
+                    href={link.href}
+                    className={`${BRACE} transition-opacity hover:opacity-60`}
+                  >
+                    <span aria-hidden className="mr-3 inline-block">
+                      &#123;
+                    </span>
+                    {link.label}
+                    <span aria-hidden className="ml-3 inline-block">
+                      &#125;
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+
+        {/* The address, set as the loudest thing on the page. Pulled up under
+            its label on mobile so the two read as one block. */}
+        <a
+          href={`mailto:${email}`}
+          /* The address is far too long to set inside the cursor's disc. */
+          data-cursor-label="Email"
+          className="order-3 -mt-4 block text-[clamp(2.25rem,9vw,10rem)] leading-[0.85] font-bold tracking-[-0.055em] break-all uppercase transition-opacity hover:opacity-70 md:order-0 md:mt-0"
+        >
+          {splitAddress(email).map((part) => (
+            <span key={part} className="block">
+              {part}
+            </span>
+          ))}
+        </a>
+
+        {/* Bottom block — copyright + socials, then the studio credit under
+            the rule. Kept as one child so the column above still distributes
+            as three rows. The year is stamped at render time, so it advances
+            on its own rather than sitting frozen in the markup. */}
+        <div className="order-4 md:order-0">
+          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-6">
+            {/* Sized to hold one line rather than wrapping mid-sentence. The
+                clamp is what makes that a guarantee instead of a guess: with
+                the current name the line is 41 characters, so tying the size to
+                the viewport keeps it fitting from a 320px phone up to where it
+                reaches the 13px the rest of this row is set in. A much longer
+                name in Site settings would need this re-tuned. */}
+            <p className="text-[clamp(0.5rem,2.9vw,0.8125rem)] tracking-[0.08em] whitespace-nowrap uppercase md:tracking-[0.12em]">
+              &copy; {new Date().getFullYear()} {settings.name}. All rights
+              reserved.
+            </p>
+
+            <ul className="flex flex-wrap items-center gap-x-8 gap-y-3 lg:gap-x-12">
+              {settings.socials.map((social, i) => (
+                <li key={i} className={BRACE}>
+                  <span aria-hidden className="mr-2.5 inline-block">
+                    &#123;
+                  </span>
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    // The two-letter label is the design; the full name is what
+                    // a screen reader announces.
+                    aria-label={social.name}
+                    className="transition-opacity hover:opacity-60"
+                  >
+                    {social.label}
+                  </a>
+                  <span aria-hidden className="ml-2.5 inline-block">
+                    &#125;
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <p className="mt-6 text-[11px] tracking-[0.12em] text-brand-white/75 uppercase">
+            {footer.creditLabel}{" "}
+            <a
+              href={footer.creditUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="normal-case transition-colors hover:text-brand-white"
+            >
+              {footer.creditName}
+            </a>
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
