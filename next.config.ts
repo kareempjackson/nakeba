@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
       costs a little more CPU the first time each size is optimised.
     */
     formats: ["image/avif", "image/webp"],
+    /* Photos uploaded in the Studio are served from Sanity's CDN and still go
+       through Next's optimiser, so they get the same formats and srcsets as
+       the ones in `public/`. */
+    remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
   },
 };
 

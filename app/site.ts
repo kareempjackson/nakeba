@@ -1,9 +1,8 @@
 /**
- * Canonical site facts. Metadata, the OG image, robots, the sitemap and the
- * structured data all read from here so they can't drift apart.
- *
- * `NEXT_PUBLIC_SITE_URL` overrides the domain for previews and staging; the
- * fallback is the production domain (the one the contact address is on).
+ * Site facts that don't belong in the CMS: the origin this deployment answers
+ * on, and the share card's pixel size. Everything editorial — name, role,
+ * description, email, the share image itself — lives in Sanity (Site settings)
+ * and reaches the page through `sanity/lib/fetch.ts`.
  */
 /**
  * The origin this deployment is actually reachable at. Every absolute URL the
@@ -31,41 +30,24 @@ function resolveSiteUrl() {
 
 export const SITE_URL = resolveSiteUrl().replace(/\/+$/, "");
 
-export const SITE_NAME = "Nakeba Mason";
-
-export const SITE_ROLE = "Strategic Operations Partner for Creative Founders";
-
-/** Kept under ~155 characters so search results don't truncate it. */
-export const SITE_DESCRIPTION =
-  "Nakeba Mason is a strategic operations partner for creative founders — building the structure, coordination and follow-through a growing studio runs on.";
-
 /**
- * The card platforms show when the site is shared, and its true pixel size.
+ * The share card's true pixel size. Stated because WhatsApp decides between a
+ * large card and a small thumbnail before it has finished fetching the image;
+ * without the dimensions it often settles for the thumbnail.
  *
- * A static file rather than the `opengraph-image` route convention, so the
- * JSON-LD can point at the same asset — the convention's URL carries a build
- * hash and isn't addressable from anywhere else.
- *
- * The filename is versioned on purpose. Facebook's scraper (which WhatsApp
- * shares) caches fetched images by URL for weeks, so re-uploading artwork at a
- * path it has already seen leaves the old picture in circulation. Bump the
- * suffix whenever the artwork changes and every cache misses on the next
- * scrape. Renaming is not enough on its own — the page URL's cached preview
- * still has to be re-scraped in Facebook's Sharing Debugger.
- *
- * The dimensions are stated because WhatsApp decides between a large card and
- * a small thumbnail before it has finished fetching the image; without them it
- * often settles for the thumbnail. They must match the file — check with
+ * An image uploaded in the Studio is cropped to exactly this on the Sanity CDN
+ * (see `fetch.ts`), so the numbers always match the file. The fallback in
+ * `public/` must match too — check with
  * `sips -g pixelWidth -g pixelHeight public/<file>` after replacing it.
+ *
+ * Facebook's scraper (which WhatsApp shares) caches images by URL for weeks.
+ * Sanity asset URLs change with every upload, so a new image is never served
+ * from that cache — but the page's own cached preview still has to be
+ * re-scraped in Facebook's Sharing Debugger.
  */
-export const SHARE_IMAGE = {
-  url: "/og-v2.png",
-  width: 1200,
-  height: 630,
-  type: "image/png",
-} as const;
+export const SHARE_IMAGE_SIZE = { width: 1200, height: 630 } as const;
 
-export const SITE_EMAIL = "hello@nakebamason.com";
-
-/** The retainer, as named on the page. */
-export const SITE_OFFER = "The Operations Partnership";
+/** Paths under `public/` become absolute on this origin; URLs pass through. */
+export function absoluteUrl(pathOrUrl: string) {
+  return /^https?:\/\//.test(pathOrUrl) ? pathOrUrl : `${SITE_URL}${pathOrUrl}`;
+}
